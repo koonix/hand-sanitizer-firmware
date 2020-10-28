@@ -1,0 +1,14 @@
+#!/bin/sh
+# Writes a build-number (commit-count) to a file.
+# To enable this hook, rename this file to "pre-commit".
+
+proj_name="$(make prjname)"
+file="build-number"
+
+commit_count="$(git --no-pager log master --oneline | wc -l)"
+mkdir -p doc
+
+echo "project $proj_name
+build: $commit_count" > "$file"
+
+git add "$file"

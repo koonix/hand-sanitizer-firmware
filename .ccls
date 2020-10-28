@@ -1,0 +1,8 @@
+clang
+%c -std=c99 -pedantic -Wall -Wextra -Werror
+%h -x
+%h c-header
+-I/usr/avr/include
+-Isrc
+-Isrc/tasks
+-D__AVR_ATmega8A__

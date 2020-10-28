@@ -1,0 +1,6 @@
+customize io, timer,
+interrupts, etc.      -> registers.c
+
+task indexes          -> taskmacros.h
+
+other stuff           -> main.c
