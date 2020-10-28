@@ -15,15 +15,6 @@
 
 #define F_CPU 8000000UL
 
-/** Maximal number of tasks that can be registered. */
-#define MAX_TASK_COUNT ((uint8_t)20u)
-
-/** Maximal time that a task can run (TASK_MAX_PERIOD*time_ticks). */
-#define TASK_MAX_PERIOD ((uint16_t)10000u)
-
-/** Minimal time that a task can run (TASK_MIN_PERIOD*time_ticks). */
-#define TASK_MIN_PERIOD ((uint8_t)1u)
-
 int
 main (void)
 {

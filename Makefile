@@ -9,7 +9,7 @@
 # ==================
 
 # project name (don't put whitespace in there!)
-PRJ = example-name
+PRJ = mini-drill-press
 
 # where to look for source files and external headers or libraries
 # (consisting of .c and .h files)
@@ -84,7 +84,7 @@ EFU =
 # ==================
 
 # compiler warning/error flags
-# handpicked these flags myself. ain't no bugs gonna slip through these!
+# handpicked these flags myself. ain't no bugs gonna slip through these amirie!
 #
 WFLAGS = -std=c99 -pedantic -Wall \
     -Wno-missing-braces -Wextra -Wno-missing-field-initializers -Wformat=2 \

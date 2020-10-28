@@ -21,13 +21,13 @@
 #include <stdint.h>
 
 
-/**< Maximal task number that can be registered. */
+/** Maximal task number that can be registered. */
 #define MAX_TASK_COUNT ((uint8_t)20u)
 
-/**< Maximal time that a task can run (TASK_MAX_PERIOD*time_ticks). */
+/** Maximal time that a task can run (TASK_MAX_PERIOD*time_ticks). */
 #define TASK_MAX_PERIOD ((uint16_t)10000u)
 
-/**< Minimal time that a task can run (TASK_MIN_PERIOD*time_ticks). */
+/** Minimal time that a task can run (TASK_MIN_PERIOD*time_ticks). */
 #define TASK_MIN_PERIOD ((uint8_t)1u)
 
 /**< Function pointer for registering tasks. */
