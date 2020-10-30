@@ -57,10 +57,10 @@ apply_motor_state (void)
 		motor_hold ();
 		break;
 	case MOTOR_RAMPUP_STATE:
-		tsk_set_task_state (TASK_MOTOR_RAMPUP, PENDING);
+		tsk_set_task_state (TASK_MOTOR_RAMPUP, RUNNABLE);
 		break;
 	case MOTOR_RAMPDOWN_STATE:
-		tsk_set_task_state (TASK_MOTOR_RAMPDOWN, PENDING);
+		tsk_set_task_state (TASK_MOTOR_RAMPDOWN, RUNNABLE);
 		break;
 	default:
 		break;
@@ -129,8 +129,8 @@ motor_initiate_startup (void)
 	motor_is_on = 1;
 	motor_is_shutting_down_or_starting_up = 1;
 	motor_state = MOTOR_RAMPUP_STATE;
-	tsk_set_task_state (TASK_BLINK, PENDING);
-	tsk_set_task_state (TASK_MOTOR_STARTUP, PENDING);
+	tsk_set_task_state (TASK_BLINK, RUNNABLE);
+	tsk_set_task_state (TASK_MOTOR_STARTUP, RUNNABLE);
 }
 
 void
@@ -153,7 +153,7 @@ motor_initiate_shutdown (void)
 	motor_is_shutting_down_or_starting_up = 1;
 	tsk_set_task_state (TASK_MOTOR_RAMPUP, SUSPENDED);
 	tsk_set_task_state (TASK_MOTOR_RAMPDOWN, SUSPENDED);
-	tsk_set_task_state (TASK_MOTOR_SHUTDOWN, PENDING);
+	tsk_set_task_state (TASK_MOTOR_SHUTDOWN, RUNNABLE);
 }
 
 void

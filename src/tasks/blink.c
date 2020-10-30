@@ -35,11 +35,11 @@ blink_handler (void)
 	{
 	case MOTOR_RAMPUP_STATE:
 	case MOTOR_HOLD_BEFORE_RAMPUP_STATE:
-		tsk_set_task_state (TASK_BLINK_UPPER, PENDING);
+		tsk_set_task_state (TASK_BLINK_UPPER, RUNNABLE);
 		tsk_set_task_state (TASK_BLINK_LOWER, SUSPENDED);
 		break;
 	default:
-		tsk_set_task_state (TASK_BLINK_LOWER, PENDING);
+		tsk_set_task_state (TASK_BLINK_LOWER, RUNNABLE);
 		tsk_set_task_state (TASK_BLINK_UPPER, SUSPENDED);
 		break;
 	}
@@ -49,14 +49,14 @@ void
 blink_upper (void)
 {
 	LED_UP_ON;
-	tsk_set_task_state (TASK_BLINK_UPPER_SECONDARY, PENDING);
+	tsk_set_task_state (TASK_BLINK_UPPER_SECONDARY, RUNNABLE);
 }
 
 void
 blink_lower (void)
 {
 	LED_DOWN_ON;
-	tsk_set_task_state (TASK_BLINK_LOWER_SECONDARY, PENDING);
+	tsk_set_task_state (TASK_BLINK_LOWER_SECONDARY, RUNNABLE);
 }
 
 void

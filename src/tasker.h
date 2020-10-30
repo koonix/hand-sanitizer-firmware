@@ -1,16 +1,19 @@
-/**
- * @file    sch.h
- * @author  Ferenc Nemeth
- * @date    21 Jul 2018
- * @brief   This is a really simple, non-preemptive task scheduler.
- *          You can register tasks with their runnable function and the periodic
+/*
+ * file:     tasker.h
+ * author:   Ferenc Nemeth, Refactored by koonix (https://github.com/soystemd)
+ * date:     21 Jul 2018
+ * brief:
+ *
+ * This is a really simple, non-preemptive task scheduler.
+ * You can register tasks with their runnable function and the periodic
  * time you want to call them. With a help of a timer the tasks get into READY
  * state after every time period (except if they are SUSPENDED) and they get
  * called and executed in the main()'s inifinte loop. After they are finished
  * everything starts over. This Scheduler helps you to keep your tasks and
  * timing organized.
  *
- *          Copyright (c) 2018 Ferenc Nemeth - https://github.com/ferenc-nemeth/
+ * Copyright (c) 2018 Ferenc Nemeth - https://github.com/ferenc-nemeth/
+ *
  */
 
 #ifndef TASKER_H
@@ -39,7 +42,7 @@ typedef void (*task_function_ptr) (void);
  */
 typedef enum
 {
-	PENDING = 0, /* In the PENDING state the task waits for the timer to put
+	RUNNABLE = 0, /* In the RUNNABLE state the task waits for the timer to put
 	                               it into READY state. */
 	READY, /* In the READY state the task is ready to be called and executed
 	          in the main function. */

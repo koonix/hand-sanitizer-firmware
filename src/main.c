@@ -21,15 +21,15 @@ main (void)
 	registers_init ();
 	sei ();
 
-	tsk_task_create (debounce, 1, PENDING); // 0 4
-	tsk_task_create (button_event_handler, 13, PENDING); // 1 50
+	tsk_task_create (debounce, 1, RUNNABLE); // 0 4
+	tsk_task_create (button_event_handler, 13, RUNNABLE); // 1 50
 
 	tsk_task_create (motor_startup, 5, SUSPENDED); // 2 35
 	tsk_task_create (motor_shutdown, 9, SUSPENDED); // 3 67
 	tsk_task_create (motor_rampup, 9, SUSPENDED); // 4 67
 	tsk_task_create (motor_rampdown, 9, SUSPENDED); // 5 67
 
-	tsk_task_create (blink, 27, PENDING); // 6 100
+	tsk_task_create (blink, 27, RUNNABLE); // 6 100
 	tsk_task_create (blink_upper, 85, SUSPENDED); // 7 340
 	tsk_task_create (blink_upper_secondary, 1, SUSPENDED); // 8 4
 

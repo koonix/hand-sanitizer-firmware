@@ -105,7 +105,7 @@ check_task_counter_and_handle_state (uint8_t task_index)
 
 /*
  * This function calls the READY tasks and then puts them back into
- * PENDING state. This function SHALL be called in the infinite loop.
+ * RUNNABLE state. This function SHALL be called in the infinite loop.
  */
 void
 tsk_task_runner (void)
@@ -115,7 +115,7 @@ tsk_task_runner (void)
 		/* If it is ready, call it.*/
 		if (task_array[task_index].state == READY)
 		{
-			task_array[task_index].state = PENDING;
+			task_array[task_index].state = RUNNABLE;
 			task_array[task_index].run ();
 		}
 	}

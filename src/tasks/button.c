@@ -76,12 +76,12 @@ button_event_handler (void)
 static void
 button_tap_event (void)
 {
-	tsk_set_task_state (TASK_MOTOR_TOGGLE_SPEED_CONTROL, PENDING);
+	tsk_set_task_state (TASK_MOTOR_TOGGLE_SPEED_CONTROL, RUNNABLE);
 }
 
 
 static void
 button_hold_event (void)
 {
-	tsk_set_task_state (TASK_MOTOR_TOGGLE_ON_OFF, PENDING);
+	tsk_set_task_state (TASK_MOTOR_TOGGLE_ON_OFF, RUNNABLE);
 }
