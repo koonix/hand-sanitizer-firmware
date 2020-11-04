@@ -1,4 +1,4 @@
-# avr-be-simple
+# avr-be-good
 
 ## Intro
 
