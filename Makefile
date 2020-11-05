@@ -177,6 +177,7 @@ clangf:
 test:
 	$(AVRDUDE) -v
 
+# erase the chip
 erase:
 	$(AVRDUDE) -e
 
