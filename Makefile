@@ -110,7 +110,7 @@ EXTRAFLAGS = -funsigned-char -funsigned-bitfields -fshort-enums \
 # ==================
 
 # executables
-AVRDUDE = avrdude -c $(PRG) -p $(DUDEMCU)
+AVRDUDE = sudo avrdude -c $(PRG) -p $(DUDEMCU)
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE    = avr-size --format=avr --target=elf32-avr --mcu=$(SIZEMCU)
@@ -176,6 +176,9 @@ clangf:
 # test programmer connectivity
 test:
 	$(AVRDUDE) -v
+
+erase:
+	$(AVRDUDE) -e
 
 # flash program to mcu
 flash: all
