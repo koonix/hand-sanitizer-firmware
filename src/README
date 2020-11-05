@@ -1,5 +1,5 @@
 these are the files you have to edit (as well as the files related to tasks, ofcourse.)
 
-customize I/O, timer-counters, interrupts, etc. : registers.c
-task indexes : taskmacros.h
-other stuff : main.c
+registers.c: customize I/O, timer-counters, interrupts, etc.
+taskmacros.h: task indexes
+main.c: other stuff
