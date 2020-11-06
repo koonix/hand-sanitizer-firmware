@@ -1,0 +1,2 @@
+all the configs should go in a config.h
+fix Make targets and how they depend on eachother and stuff
