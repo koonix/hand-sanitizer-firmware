@@ -56,13 +56,12 @@ typedef uint16_t task_counter_t;
  */
 typedef struct
 {
-	task_function_ptr
-	  run; /**< This is the task that gets called periodically. */
-	task_counter_t run_period; /**< The period we want to call it. */
-	task_counter_t counter; /**< Counter, if it reaches the period, then the
-	                        timer puts it into READY state. */
+	task_function_ptr run;     /** This is the task that gets called periodically. */
 	task_state state; /**< The current state of the task. */
-} task;
+	task_counter_t run_period; /** The period we want to call it. */
+	task_counter_t counter;    /** Counter, if it reaches the period, then the
+	                        timer puts it into READY state. */
+} Task;
 
 
 /**

@@ -5,4 +5,5 @@ clang
 -I/usr/avr/include
 -Isrc
 -Isrc/tasks
+-Isrc/config
 -D__AVR_ATmega8A__

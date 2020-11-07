@@ -9,11 +9,23 @@
 static void
 io_init (void)
 {
-	DDRD = (1 << DDRD4) | (0 << DDRD3) | (1 << DDRD2);
-	PORTD = (0 << PORTD4) | (1 << PORTD3) | (0 << PORTD2);
+	DDRD =
+        (1 << DDRD4) |
+        (0 << DDRD3) |
+        (1 << DDRD2) |
+        (1 << 0);
+	PORTD =
+        (0 << PORTD4) |
+        (1 << PORTD3) |
+        (0 << PORTD2) |
+        (1 << 0);
 
-	DDRB = (1 << DDRB1);
-	PORTB = (1 << PORTB1);
+	DDRB =
+        (1 << DDRB1) |
+        (1 << 0);
+	PORTB =
+        (1 << PORTB1) |
+        (1 << 0);
 }
 
 /*
