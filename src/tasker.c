@@ -27,7 +27,63 @@ check_task_counter_and_handle_state (uint8_t task_index);
 static Task task_array[] = { NULL };
 
 /* index of the task that is currently being processed. */
-static uint8_t current_task_index = 0;
+static uint8_t numberof_tasks = 0;
+
+
+/*
+ * This function registers the tasks.
+ * At the beginning there is an error check for registration.
+ * If everything is good, the input values are saved.
+ */
+void
+tsk_task_create (task_function_ptr function, task_state state, task_counter_t run_period)
+{
+	/* return_enum exit = ERR_UNKNOWN; */
+
+	/* /1* Null pointer. *1/ */
+	/* if (task_array == NULL) */
+	/* 	exit = ERR_NULL_PTR; */
+
+	/* /1* Time limit. *1/ */
+	/* else if ((run_period < TASK_MIN_PERIOD) || (run_period > TASK_MAX_PERIOD)) */
+	/* 	exit = ERR_TIME_LIMIT; */
+
+	/* /1* Task number limit. *1/ */
+	/* else if (numberof_tasks >= MAX_TASK_COUNT) */
+	/* 	exit = ERR_COUNT_LIMIT; */
+
+	/* /1* Everything is fine, save. *1/ */
+	/* else */
+	/* { */
+    task_array[numberof_tasks].run = function;
+	task_array[numberof_tasks].run_period = run_period;
+	task_array[numberof_tasks].state = state;
+	task_array[numberof_tasks].counter = 1;
+	numberof_tasks++;
+	/* exit = OK; */
+	/* } */
+
+	/* return exit; */
+}
+
+
+void
+tsk_init(void)
+{
+    uint8_t task_count = sizeof(task_array)/sizeof(task_array[0]);
+	for (uint8_t task_index = 0; task_index < task_count; task_index++)
+    {}
+}
+
+uint8_t
+find_task_index(task_function_ptr fn)
+{
+    uint8_t task_index=0;
+	for (; task_index < numberof_tasks; task_index++)
+        if(task_array[task_index].run == fn)
+            break;
+    return task_index;
+}
 
 
 /*
@@ -37,7 +93,7 @@ static uint8_t current_task_index = 0;
 void
 tsk_task_time_manager (void)
 {
-	for (uint8_t task_index = 0; task_index < current_task_index; task_index++)
+	for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++)
 		if (task_array[task_index].state != SUSPENDED)
 			check_task_counter_and_handle_state (task_index);
 }
@@ -63,8 +119,6 @@ check_task_counter_and_handle_state (uint8_t task_index)
 	}
 }
 
-
-
 /*
  * This function calls the READY tasks and then puts them back into
  * RUNNABLE state. This function SHALL be called in the infinite loop.
@@ -72,7 +126,7 @@ check_task_counter_and_handle_state (uint8_t task_index)
 void
 tsk_task_runner (void)
 {
-	for (uint8_t task_index = 0; task_index < current_task_index; task_index++)
+	for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++)
 	{
 		/* If it is ready, call it.*/
 		if (task_array[task_index].state == READY)
@@ -82,7 +136,6 @@ tsk_task_runner (void)
 		}
 	}
 }
-
 
 
 /*

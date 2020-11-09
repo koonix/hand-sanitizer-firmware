@@ -25,16 +25,16 @@
 
 
 /* Maximal task number that can be registered. */
-#define MAX_TASK_COUNT ((uint8_t)20u)
-
+//#define MAX_TASK_COUNT ((uint8_t)20u)
 /* Maximal time that a task can run (TASK_MAX_PERIOD*time_ticks). */
-#define TASK_MAX_PERIOD ((uint16_t)10000u)
-
+//#define TASK_MAX_PERIOD ((uint16_t)10000u)
 /* Minimal time that a task can run (TASK_MIN_PERIOD*time_ticks). */
-#define TASK_MIN_PERIOD ((uint8_t)1u)
+//#define TASK_MIN_PERIOD ((uint8_t)1u)
 
 /* Function pointer for registering tasks. */
 typedef void (*task_function_ptr) (void);
+/* task counter type */
+typedef uint16_t task_counter_t;
 
 
 /**
@@ -42,49 +42,44 @@ typedef void (*task_function_ptr) (void);
  */
 typedef enum
 {
-	RUNNABLE = 0, /* In the RUNNABLE state the task waits for the timer to put
-	                               it into READY state. */
-	READY, /* In the READY state the task is ready to be called and executed
-	          in the main function. */
-
-	SUSPENDED /* In the SUSPENDED state the task is ignored by the timer and
-	             executer. */
+    /* In the RUNNABLE state the task waits for the timer to put it into READY state. */
+	RUNNABLE = 0,
+    /* In the READY state the task is ready to be called and executed in the main function. */
+	READY,
+    /* In the SUSPENDED state the task is ignored by the timer and executer. */
+	SUSPENDED
 } task_state;
 
-typedef uint16_t task_counter_t;
 /**
  * Variables of the tasks.
  */
 typedef struct
 {
 	task_function_ptr run;     /** This is the task that gets called periodically. */
-	task_state state; /** The current state of the task. */
+	task_state state;          /** The current state of the task. */
 	task_counter_t run_period; /** The period we want to call it. */
-	task_counter_t counter;    /** Counter, if it reaches the period, then the
-	                        timer puts it into READY state. */
+	task_counter_t counter;    /** Counter, if it reaches the period, then the timer puts it into READY state. */
 } Task;
 
 
 /**
  * Feedback and error handling for the task creation.
  */
-typedef enum
-{
-	OK = 0, /* OK:    Everything went as expected. */
-	ERR_NULL_PTR, /* ERROR: Null pointer as a task. */
-	ERR_TIME_LIMIT, /* ERROR: Task period out of range */
-	ERR_COUNT_LIMIT, /* ERROR: Number of registered tasks exceded maximum */
-	ERR_UNKNOWN /* ERROR: Something horrible happened, time to panic! */
-} return_enum;
+/* typedef enum */
+/* { */
+/* 	OK = 0, /1* OK:    Everything went as expected. *1/ */
+/* 	ERR_NULL_PTR, /1* ERROR: Null pointer as a task. *1/ */
+/* 	ERR_TIME_LIMIT, /1* ERROR: Task period out of range *1/ */
+/* 	ERR_COUNT_LIMIT, /1* ERROR: Number of registered tasks exceded maximum *1/ */
+/* 	ERR_UNKNOWN /1* ERROR: Something horrible happened, time to panic! *1/ */
+/* } return_enum; */
 
 
 /**
  * Functions.
  */
-return_enum
-tsk_task_create (task_function_ptr function,
-                 task_counter_t run_period,
-                 task_state state);
+void tsk_task_create
+    (task_function_ptr function, task_state state, task_counter_t run_period);
 
 void
 tsk_task_time_manager (void);

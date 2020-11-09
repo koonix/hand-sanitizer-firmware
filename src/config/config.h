@@ -11,27 +11,30 @@
 // =====================
 // = Tasks
 // =====================
+
 #ifdef CFG_TASKS
 
+tsk_task_create(debounce,
+
 /* Define tasks, their initial state and their run period */
-static Task task_array[] = {
-    { debounce,                 RUNNABLE,        1  },
-    { button_event_handler,     SUSPENDED,       13 },
-    { motor_startup,            SUSPENDED,       5  },
-    { motor_shutdown,           SUSPENDED,       9  },
-    { motor_rampup,             SUSPENDED,       9  },
-    { motor_rampdown,           SUSPENDED,       9  },
-    { blink,                    SUSPENDED,       27 },
-    { blink_upper,              SUSPENDED,       85 },
-    { blink_lower,              SUSPENDED,       1  },
-    { blink_upper_secondary,    SUSPENDED,       14 },
-    { blink_lower_secondary,    SUSPENDED,       1  },
-    { motor_toggle_speed_control, SUSPENDED,     69 },
-    { motor_toggle_on_off,      SUSPENDED,       69 },
-    { blink_upper,              SUSPENDED,       1  },
-    { motor_rampdown,           SUSPENDED,       1  },
-    { motor_rampdown,           SUSPENDED,       1  },
-};
+/* static Task task_array[] = { */
+/*     { debounce,                 RUNNABLE,        1  }, */
+/*     { button_event_handler,     SUSPENDED,       13 }, */
+/*     { motor_startup,            SUSPENDED,       5  }, */
+/*     { motor_shutdown,           SUSPENDED,       9  }, */
+/*     { motor_rampup,             SUSPENDED,       9  }, */
+/*     { motor_rampdown,           SUSPENDED,       9  }, */
+/*     { blink,                    SUSPENDED,       27 }, */
+/*     { blink_upper,              SUSPENDED,       85 }, */
+/*     { blink_lower,              SUSPENDED,       1  }, */
+/*     { blink_upper_secondary,    SUSPENDED,       14 }, */
+/*     { blink_lower_secondary,    SUSPENDED,       1  }, */
+/*     { motor_toggle_speed_control, SUSPENDED,     69 }, */
+/*     { motor_toggle_on_off,      SUSPENDED,       69 }, */
+/*     { blink_upper,              SUSPENDED,       1  }, */
+/*     { motor_rampdown,           SUSPENDED,       1  }, */
+/*     { motor_rampdown,           SUSPENDED,       1  }, */
+/* }; */
 
 #endif
 

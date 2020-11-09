@@ -5,7 +5,9 @@
 #include "button.h"
 #include "motor.h"
 
-#define MKTASK(fn, stat, period)
+#define MKTASK(fn, stat, period) \
+    static uint8_t index_##fn \
+
 
 #define TASK_DEBOUNCE 0
 #define TASK_BUTTON_EVENT_HANDLER 1
