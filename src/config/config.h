@@ -1,26 +1,19 @@
 #include <avr/io.h>
-#include "neomacros.h"
+#include "supermacros.h"
 #include "tasker.h"
-#include "taskmacros.h"
+#include "blink.h"
+#include "button.h"
+#include "motor.h"
+
+#define F_CPU 8000000
 
 
-#define BUTTON       D,3
-#define LED_DOWN     D,2
-#define LED_UP       D,4
+// =====================
+// = Tasks
+// =====================
+#ifdef CFG_TASKS
 
-
-static void
-io_init (void) {
-    in(BUTTON);
-    out(LED_UP);
-    out(LED_DOWN);
-}
-
-
-#define MAX_TASK_COUNT ((uint8_t)20u) /* Max number of tasks that can be registered. */
-#define TASK_MAX_PERIOD ((uint16_t)10000u) /* Max allowed task run period. */
-#define TASK_MIN_PERIOD ((uint8_t)1u) /* Minimum allowed task run period. */
-
+/* Define tasks, their initial state and their run period */
 static Task task_array[] = {
     { debounce,                 RUNNABLE,        1  },
     { button_event_handler,     SUSPENDED,       13 },
@@ -28,53 +21,67 @@ static Task task_array[] = {
     { motor_shutdown,           SUSPENDED,       9  },
     { motor_rampup,             SUSPENDED,       9  },
     { motor_rampdown,           SUSPENDED,       9  },
-
-    {   blink,
-        SUSPENDED,
-        27
-    },
-    {   blink_upper,
-        SUSPENDED,
-        85
-    },
-    {   blink_lower,
-        SUSPENDED,
-        1
-    },
-    {   blink_upper_secondary,
-        SUSPENDED,
-        14
-    },
-    {   blink_lower_secondary,
-        SUSPENDED,
-        1
-    },
-    {   motor_toggle_speed_control,
-        SUSPENDED,
-        69
-    },
-    {   motor_toggle_on_off,
-        SUSPENDED,
-        69
-    },
-
-    { blink_upper,             SUSPENDED,        1 },
-    { motor_rampdown,           SUSPENDED,       1 },
-    { motor_rampdown,           SUSPENDED,       1 },
+    { blink,                    SUSPENDED,       27 },
+    { blink_upper,              SUSPENDED,       85 },
+    { blink_lower,              SUSPENDED,       1  },
+    { blink_upper_secondary,    SUSPENDED,       14 },
+    { blink_lower_secondary,    SUSPENDED,       1  },
+    { motor_toggle_speed_control, SUSPENDED,     69 },
+    { motor_toggle_on_off,      SUSPENDED,       69 },
+    { blink_upper,              SUSPENDED,       1  },
+    { motor_rampdown,           SUSPENDED,       1  },
+    { motor_rampdown,           SUSPENDED,       1  },
 };
 
-#define TCNT0_VALUE 0x83
+#endif
+
+// =====================
+// = Input/Output
+// =====================
+#ifdef CFG_IO
+
+/* Put meaningful names on I/O pins */
+#define BUTTON       D,3
+#define LED_DOWN     D,2
+#define LED_UP       D,4
+
+#endif
+
+
+// =====================
+// = Registers
+// =====================
+#ifdef CFG_REG
+
+/* Define I/O pins as inputs or outputs, and other I/O settings */
 static void
-timer0_init (void) {
+io_init (void) {
+
+    INPUT(BUTTON);
+    PULLUP(BUTTON);
+
+    OUTPUT(LED_UP);
+    OFF(LED_UP);
+
+    OUTPUT(LED_DOWN);
+    ON(LED_DOWN);
+}
+
+
+#define TCNT0_VALUE 0x83
+
+static void timer0_init (void) {
+
 	TCCR0 =
         (1 << CS02) |
         (0 << CS01) |
         (0 << CS00);
-    TCNT0 = 0x83; /* top = 0x83; timer increments to 256 - 131 = 125. */
+
+    TCNT0 = TCNT0_VALUE;
 }
 
-static void
-timer1_init (void) {
+static void timer1_init (void) {
+
 	TCCR1A =
         (1 << COM1A1) |
         (1 << COM1A0) |
@@ -100,8 +107,8 @@ timer1_init (void) {
 	OCR1B = 0;
 }
 
-static void
-timer_interrupts_init (void) {
+static void timer_interrupts_init (void) {
+
 	TIMSK =
         (0 << OCIE2)  |
         (0 << TOIE2)  |
@@ -112,65 +119,12 @@ timer_interrupts_init (void) {
         (1 << TOIE0);
 }
 
-void
-registers_init (void)
-{
+static void registers_init (void) {
+
 	io_init ();
 	timer0_init ();
 	timer1_init ();
 	timer_interrupts_init ();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-/*
- * low-level macros for I/O manipulation.
- * try not to actually use these in your code,
- * but use them to define more useful macros down below.
- */
-
-#define SETBIT(ADDRESS, BIT)   (ADDRESS |= (1 << BIT))
-#define CLEARBIT(ADDRESS, BIT) (ADDRESS &= ~(1 << BIT))
-#define FLIPBIT(ADDRESS, BIT)  (ADDRESS ^= (1 << BIT))
-#define GETBIT(ADDRESS, BIT)   (ADDRESS & (1 << BIT))
-
-/*
- * set useful names for I/O pins.
- * example:
- *
- *  #define BUTTON1_PORT PINB
- *  #define BUTTON1_PIN  PINB4
- *  #define LED_PORT     PORTC
- *  #define LED_PIN      PORTC3
-*/
-#define BUTTON_PORT   PIND
-#define BUTTON_PIN    PIND3
-#define LED_DOWN_PORT PORTD
-#define LED_DOWN_PIN  PORTD2
-#define LED_UP_PORT   PORTD
-#define LED_UP_PIN    PORTD4
-
-/*
- * and finally, define some nice, meaningful I/O actions.
- *  example:
- *
- *  #define READ_BUTTON1 GETBIT(BUTTON1_PORT,BUTTON1_PIN)
- *  #define SET_LED      SETBIT(LED_PORT,LED_PIN)
-*/
-#define READ_BUTTON       GETBIT (BUTTON_PORT,   BUTTON_PIN)
-#define LED_DOWN_ON       SETBIT (LED_DOWN_PORT, LED_DOWN_PIN)
-#define LED_DOWN_OFF    CLEARBIT (LED_DOWN_PORT, LED_DOWN_PIN)
-#define LED_UP_ON         SETBIT (LED_UP_PORT,   LED_UP_PIN)
-#define LED_UP_OFF      CLEARBIT (LED_UP_PORT,   LED_UP_PIN)
-#define LED_UP_TOGGLE    FLIPBIT (LED_UP_PORT,   LED_UP_PIN)
-#define LED_DOWN_TOGGLE  FLIPBIT (LED_DOWN_PORT, LED_DOWN_PIN)
+#endif

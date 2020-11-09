@@ -24,16 +24,16 @@
 #include <stdint.h>
 
 
-/** Maximal task number that can be registered. */
+/* Maximal task number that can be registered. */
 #define MAX_TASK_COUNT ((uint8_t)20u)
 
-/** Maximal time that a task can run (TASK_MAX_PERIOD*time_ticks). */
+/* Maximal time that a task can run (TASK_MAX_PERIOD*time_ticks). */
 #define TASK_MAX_PERIOD ((uint16_t)10000u)
 
-/** Minimal time that a task can run (TASK_MIN_PERIOD*time_ticks). */
+/* Minimal time that a task can run (TASK_MIN_PERIOD*time_ticks). */
 #define TASK_MIN_PERIOD ((uint8_t)1u)
 
-/**< Function pointer for registering tasks. */
+/* Function pointer for registering tasks. */
 typedef void (*task_function_ptr) (void);
 
 
@@ -46,6 +46,7 @@ typedef enum
 	                               it into READY state. */
 	READY, /* In the READY state the task is ready to be called and executed
 	          in the main function. */
+
 	SUSPENDED /* In the SUSPENDED state the task is ignored by the timer and
 	             executer. */
 } task_state;
@@ -57,7 +58,7 @@ typedef uint16_t task_counter_t;
 typedef struct
 {
 	task_function_ptr run;     /** This is the task that gets called periodically. */
-	task_state state; /**< The current state of the task. */
+	task_state state; /** The current state of the task. */
 	task_counter_t run_period; /** The period we want to call it. */
 	task_counter_t counter;    /** Counter, if it reaches the period, then the
 	                        timer puts it into READY state. */

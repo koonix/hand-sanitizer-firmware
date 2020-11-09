@@ -24,49 +24,11 @@ check_task_counter_and_handle_state (uint8_t task_index);
 
 
 /* variables and information for every single task. */
-static task task_array[MAX_TASK_COUNT] = { NULL };
+static Task task_array[] = { NULL };
 
 /* index of the task that is currently being processed. */
 static uint8_t current_task_index = 0;
 
-
-/*
- * This function registers the tasks.
- * At the beginning there is an error check for registration.
- * If everything is good, the input values are saved.
- */
-return_enum
-tsk_task_create (task_function_ptr function,
-                 task_counter_t run_period,
-                 task_state state)
-{
-	return_enum exit = ERR_UNKNOWN;
-
-	/* Null pointer. */
-	if (task_array == NULL)
-		exit = ERR_NULL_PTR;
-
-	/* Time limit. */
-	else if ((run_period < TASK_MIN_PERIOD) || (run_period > TASK_MAX_PERIOD))
-		exit = ERR_TIME_LIMIT;
-
-	/* Task number limit. */
-	else if (current_task_index >= MAX_TASK_COUNT)
-		exit = ERR_COUNT_LIMIT;
-
-	/* Everything is fine, save. */
-	else
-	{
-		task_array[current_task_index].run = function;
-		task_array[current_task_index].run_period = run_period;
-		task_array[current_task_index].state = state;
-		task_array[current_task_index].counter = 1;
-		current_task_index++;
-		exit = OK;
-	}
-
-	return exit;
-}
 
 /*
  * This function keeps track of the tasks' time and puts them into

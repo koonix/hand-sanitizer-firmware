@@ -31,7 +31,10 @@ CLANGF = src src/tasks
 # ==================
 
 # mcu clock	frequency
-CLK = 8000000UL
+# it's defined in config-registers.h now,
+# so it's commented-out here.
+#
+# CLK = 8000000UL
 
 
 # mcu model
@@ -124,7 +127,8 @@ HEX = $(REL)/$(PRJ).hex
 ELF = $(REL)/$(PRJ).elf
 
 # c flags
-CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) -Werror -Os $(DEBUG) -DF_CPU=$(CLK) \
+#CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) -Werror -Os $(DEBUG) -DF_CPU=$(CLK)
+CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) -Werror -Os $(DEBUG) \
 		 -mmcu=$(MCU) $(INCX) -D$(MCU_DEF)
 
 
