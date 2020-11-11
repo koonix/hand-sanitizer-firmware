@@ -1,50 +1,32 @@
 ﻿---
-BasedOnStyle: Mozilla
-AlignAfterOpenBracket: Align
-AlignConsecutiveAssignments: 'false'
-AlignConsecutiveDeclarations: 'false'
-AlignEscapedNewlines: DontAlign
-AlignOperands: 'true'
-AlignTrailingComments: 'false'
-AllowAllParametersOfDeclarationOnNextLine: 'true'
-AllowShortBlocksOnASingleLine: 'false'
-AllowShortCaseLabelsOnASingleLine: 'false'
-AllowShortFunctionsOnASingleLine: Empty
-AllowShortIfStatementsOnASingleLine: 'false'
-AllowShortLoopsOnASingleLine: 'false'
-AlwaysBreakBeforeMultilineStrings: 'true'
-BinPackArguments: 'false'
-BinPackParameters: 'false'
-BreakBeforeBinaryOperators: None
-BreakBeforeBraces: Allman
-BreakBeforeTernaryOperators: 'false'
-BreakConstructorInitializers: AfterColon
-ColumnLimit: '80'
-CompactNamespaces: 'false'
-ConstructorInitializerAllOnOneLineOrOnePerLine: 'true'
-Cpp11BracedListStyle: 'false'
-DerivePointerAlignment: 'false'
-FixNamespaceComments: 'true'
-IncludeBlocks: Merge
-IndentCaseLabels: 'false'
-IndentPPDirectives: AfterHash
-IndentWidth: '4'
-IndentWrappedFunctionNames: 'false'
-KeepEmptyLinesAtTheStartOfBlocks: 'false'
+
 Language: Cpp
-MaxEmptyLinesToKeep: '6'
-NamespaceIndentation: All
-PointerAlignment: Left
-ReflowComments: 'true'
-SortIncludes: 'false'
-SortUsingDeclarations: 'true'
-SpaceAfterCStyleCast: 'false'
-SpaceAfterTemplateKeyword: 'true'
-SpaceBeforeAssignmentOperators: 'true'
-SpaceBeforeParens: Always
-SpaceInEmptyParentheses: 'false'
-SpacesBeforeTrailingComments: '1'
-SpacesInCStyleCastParentheses: 'false'
+Standard: Auto
+BasedOnStyle: Chromium
+
+ColumnLimit: '85'
 TabWidth: '4'
-UseTab: ForIndentation
+UseTab: Never
+
+AlignConsecutiveMacros: 'true'
+AlignConsecutiveAssignments: 'true'
+AlignEscapedNewlines: Left
+AlignTrailingComments: 'true'
+
+AllowAllArgumentsOnNextLine: 'true'
+AllowAllParametersOfDeclarationOnNextLine: 'true'
+AllowShortCaseLabelsOnASingleLine: 'true'
+AllowShortFunctionsOnASingleLine: All
+
+BreakBeforeBraces: Custom
+BreakBeforeBinaryOperators: None
+
+BraceWrapping:
+    AfterFunction: true
+
+IncludeBlocks: Preserve
+PointerAlignment: Left
+ReflowComments: 'false'
+SortIncludes: 'false'
+
 ...

@@ -32,7 +32,7 @@ static _Bool motor_is_shutting_down_or_starting_up = 0;
 void
 motor_toggle_speed_control (void)
 {
-	tsk_set_task_state (TASK_MOTOR_TOGGLE_SPEED_CONTROL, SUSPENDED);
+	tsk_set_task_state (TASK_MOTOR_TOGGLE_SPEED_CONTROL, PAUSED);
 	if (motor_is_on && !motor_is_shutting_down_or_starting_up)
 		toggle_motor_state ();
 }
@@ -71,8 +71,8 @@ apply_motor_state (void)
 static void
 motor_hold (void)
 {
-	tsk_set_task_state (TASK_MOTOR_RAMPUP, SUSPENDED);
-	tsk_set_task_state (TASK_MOTOR_RAMPDOWN, SUSPENDED);
+	tsk_set_task_state (TASK_MOTOR_RAMPUP, PAUSED);
+	tsk_set_task_state (TASK_MOTOR_RAMPDOWN, PAUSED);
 }
 
 
@@ -82,7 +82,7 @@ motor_rampup (void)
 	OCR1A += 1;
 	if (OCR1A >= MOTOR_MAX_SPEED)
 	{
-		tsk_set_task_state (TASK_MOTOR_RAMPUP, SUSPENDED);
+		tsk_set_task_state (TASK_MOTOR_RAMPUP, PAUSED);
 		motor_state = MOTOR_HOLD_BEFORE_RAMPDOWN_STATE;
 	}
 }
@@ -94,7 +94,7 @@ motor_rampdown (void)
 	OCR1A -= 1;
 	if (OCR1A <= MOTOR_MIN_SPEED)
 	{
-		tsk_set_task_state (TASK_MOTOR_RAMPDOWN, SUSPENDED);
+		tsk_set_task_state (TASK_MOTOR_RAMPDOWN, PAUSED);
 		motor_state = MOTOR_HOLD_BEFORE_RAMPUP_STATE;
 	}
 }
@@ -107,7 +107,7 @@ motor_rampdown (void)
 void
 motor_toggle_on_off (void)
 {
-	tsk_set_task_state (TASK_MOTOR_TOGGLE_ON_OFF, SUSPENDED);
+	tsk_set_task_state (TASK_MOTOR_TOGGLE_ON_OFF, PAUSED);
 	if (!motor_is_shutting_down_or_starting_up)
 		motor_handle_on_off_toggling ();
 }
@@ -139,7 +139,7 @@ motor_startup (void)
 	OCR1A += 1;
 	if (OCR1A >= MOTOR_MIN_SPEED)
 	{
-		tsk_set_task_state (TASK_MOTOR_STARTUP, SUSPENDED);
+		tsk_set_task_state (TASK_MOTOR_STARTUP, PAUSED);
 		motor_is_shutting_down_or_starting_up = 0;
 		motor_state = MOTOR_HOLD_BEFORE_RAMPUP_STATE;
 	}
@@ -151,8 +151,8 @@ motor_initiate_shutdown (void)
 {
 	motor_state = MOTOR_RAMPDOWN_STATE;
 	motor_is_shutting_down_or_starting_up = 1;
-	tsk_set_task_state (TASK_MOTOR_RAMPUP, SUSPENDED);
-	tsk_set_task_state (TASK_MOTOR_RAMPDOWN, SUSPENDED);
+	tsk_set_task_state (TASK_MOTOR_RAMPUP, PAUSED);
+	tsk_set_task_state (TASK_MOTOR_RAMPDOWN, PAUSED);
 	tsk_set_task_state (TASK_MOTOR_SHUTDOWN, RUNNABLE);
 }
 
@@ -162,7 +162,7 @@ motor_shutdown (void)
 	OCR1A -= 1;
 	if (OCR1A == 0)
 	{
-		tsk_set_task_state (TASK_MOTOR_SHUTDOWN, SUSPENDED);
+		tsk_set_task_state (TASK_MOTOR_SHUTDOWN, PAUSED);
 		motor_is_shutting_down_or_starting_up = 0;
 		motor_is_on = 0;
 	}

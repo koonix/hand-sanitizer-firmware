@@ -7,7 +7,7 @@
  * This is a really simple, non-preemptive task scheduler.
  * You can register tasks with their runnable function and the periodic
  * time you want to call them. With a help of a timer the tasks get into READY
- * state after every time period (except if they are SUSPENDED) and they get
+ * state after every time period (except if they are PAUSED) and they get
  * called and executed in the main()'s inifinte loop. After they are finished
  * everything starts over. This Scheduler helps you to keep your tasks and
  * timing organized.
@@ -19,187 +19,105 @@
 #include "tasker.h"
 
 // Static function prototypes:
-static void
-check_task_counter_and_handle_state (uint8_t task_index);
+static void check_task_counter_and_handle_state(uint8_t task_index);
+static uint8_t get_task_index(TaskFunctionPtr task);
 
-
-/* variables and information for every single task. */
-static Task task_array[] = { NULL };
-
-/* index of the task that is currently being processed. */
+static Task task_array[]      = {NULL};
 static uint8_t numberof_tasks = 0;
 
-
-/*
- * This function registers the tasks.
- * At the beginning there is an error check for registration.
- * If everything is good, the input values are saved.
- */
-void
-tsk_task_create (task_function_ptr function, task_state state, task_counter_t run_period)
+void tsk_task_create(TaskFunctionPtr function, TaskState state, TaskTime period)
 {
-	/* return_enum exit = ERR_UNKNOWN; */
-
-	/* /1* Null pointer. *1/ */
-	/* if (task_array == NULL) */
-	/* 	exit = ERR_NULL_PTR; */
-
-	/* /1* Time limit. *1/ */
-	/* else if ((run_period < TASK_MIN_PERIOD) || (run_period > TASK_MAX_PERIOD)) */
-	/* 	exit = ERR_TIME_LIMIT; */
-
-	/* /1* Task number limit. *1/ */
-	/* else if (numberof_tasks >= MAX_TASK_COUNT) */
-	/* 	exit = ERR_COUNT_LIMIT; */
-
-	/* /1* Everything is fine, save. *1/ */
-	/* else */
-	/* { */
-    task_array[numberof_tasks].run = function;
-	task_array[numberof_tasks].run_period = run_period;
-	task_array[numberof_tasks].state = state;
-	task_array[numberof_tasks].counter = 1;
-	numberof_tasks++;
-	/* exit = OK; */
-	/* } */
-
-	/* return exit; */
-}
-
-
-void
-tsk_init(void)
-{
-    uint8_t task_count = sizeof(task_array)/sizeof(task_array[0]);
-	for (uint8_t task_index = 0; task_index < task_count; task_index++)
-    {}
-}
-
-uint8_t
-find_task_index(task_function_ptr fn)
-{
-    uint8_t task_index=0;
-	for (; task_index < numberof_tasks; task_index++)
-        if(task_array[task_index].run == fn)
-            break;
-    return task_index;
-}
-
-
-/*
- * This function keeps track of the tasks' time and puts them into
- * READY state. This function shall be called in a timer interrupt.
- */
-void
-tsk_task_time_manager (void)
-{
-	for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++)
-		if (task_array[task_index].state != SUSPENDED)
-			check_task_counter_and_handle_state (task_index);
+  task_array[numberof_tasks].run     = function;
+  task_array[numberof_tasks].period  = period;
+  task_array[numberof_tasks].state   = state;
+  task_array[numberof_tasks].counter = 1;
+  numberof_tasks++;
 }
 
 /*
- * This is a backend method used in
- * the function "tsk_task_time_manager".
+ * Finds a task's function and find it's
+ * index in the tasks_array.
  */
-static void
-check_task_counter_and_handle_state (uint8_t task_index)
+static uint8_t get_task_index(TaskFunctionPtr task)
 {
-	/* Put it into READY state. */
-	if (task_array[task_index].counter >= task_array[task_index].run_period)
-	{
-		task_array[task_index].counter = 1;
-		task_array[task_index].state = READY;
-	}
-
-	/* Or increment task's counter. */
-	else
-	{
-		task_array[task_index].counter++;
-	}
+  uint8_t task_index = 0;
+  for (; task_index < numberof_tasks; task_index++)
+    if (task_array[task_index].run == task)
+      break;
+  return task_index;
 }
 
-/*
- * This function calls the READY tasks and then puts them back into
- * RUNNABLE state. This function SHALL be called in the infinite loop.
- */
-void
-tsk_task_runner (void)
+/* This function keeps track of the tasks' time and puts them into
+READY state. This function shall be called in a timer interrupt. */
+void tsk_task_time_manager(void)
 {
-	for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++)
-	{
-		/* If it is ready, call it.*/
-		if (task_array[task_index].state == READY)
-		{
-			task_array[task_index].state = RUNNABLE;
-			task_array[task_index].run ();
-		}
-	}
+  for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++)
+    if (task_array[task_index].state != PAUSED)
+      check_task_counter_and_handle_state(task_index);
+}
+/* This is a backend method used in the function "tsk_task_time_manager". */
+static void check_task_counter_and_handle_state(uint8_t task_index)
+{
+  /* Put it into READY state. */
+  if (task_array[task_index].counter >= task_array[task_index].period) {
+    task_array[task_index].counter = 1;
+    task_array[task_index].state   = READY;
+  }
+
+  /* Or increment task's counter. */
+  else {
+    task_array[task_index].counter++;
+  }
 }
 
-
-/*
- * Returns the state of the task.
- */
-task_state
-tsk_get_task_state (uint8_t task_index)
+/* This function calls the READY tasks and then puts them back into
+RUNNABLE state. This function SHALL be called in the infinite loop. */
+void tsk_task_runner(void)
 {
-	return task_array[task_index].state;
+  for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++) {
+    /* If it is ready, call it.*/
+    if (task_array[task_index].state == READY) {
+      task_array[task_index].state = RUNNABLE;
+      task_array[task_index].run();
+    }
+  }
 }
 
-
-
-/*
- * Returns the burst time of the task.
- */
-task_counter_t
-tsk_get_task_period (uint8_t task_index)
+/* Returns the state of the task. */
+TaskState tsk_get_task_state(TaskFunctionPtr task)
 {
-	return task_array[task_index].run_period;
+  return task_array[get_task_index(task)].state;
 }
 
-
-
-/*
- * Returns the current counter value of the task.
- */
-task_counter_t
-tsk_get_task_counter (uint8_t task_index)
+/* Returns the burst time of the task. */
+TaskTime tsk_get_task_period(TaskFunctionPtr task)
 {
-	return task_array[task_index].counter;
+  return task_array[get_task_index(task)].period;
 }
 
-
-
-/*
- * Manually changes the task's state.
- */
-void
-tsk_set_task_state (uint8_t task_index, task_state new_state)
+/* Returns the current counter value of the task. */
+TaskTime tsk_get_task_counter(TaskFunctionPtr task)
 {
-	task_array[task_index].state = new_state;
-	if (new_state == SUSPENDED)
-		task_array[task_index].counter = 1;
+  return task_array[get_task_index(task)].counter;
 }
 
-
-
-/*
- * Manually changes the task's burst time.
- */
-void
-tsk_set_task_period (uint8_t task_index, task_counter_t new_period)
+/* Manually changes the task's state. */
+void tsk_set_task_state(TaskFunctionPtr task, TaskState new_state)
 {
-	task_array[task_index].run_period = new_period;
+  uint8_t task_index           = get_task_index(task);
+  task_array[task_index].state = new_state;
+  if (new_state == PAUSED)
+    task_array[task_index].counter = 1;
 }
 
-
-
-/*
- * Manually changes the task's counter.
- */
-void
-tsk_set_task_counter (uint8_t task_index, task_counter_t new_counter)
+/* Manually changes the task's burst time. */
+void tsk_set_task_period(TaskFunctionPtr task, TaskTime new_period)
 {
-	task_array[task_index].counter = new_counter;
+  task_array[get_task_index(task)].period = new_period;
+}
+
+/* Manually changes the task's counter. */
+void tsk_set_task_counter(TaskFunctionPtr task, TaskTime new_counter)
+{
+  task_array[get_task_index(task)].counter = new_counter;
 }

@@ -11,18 +11,17 @@
 #define CFG_REG
 #include "config.h"
 
-int
-main (void)
+int main(void)
 {
-	registers_init ();
-	sei ();
+  registers_init();
+  sei();
 
-	while (1)
-		tsk_task_runner ();
+  while (1)
+	tsk_task_runner();
 }
 
-ISR (TIMER0_OVF_vect)
+ISR(TIMER0_OVF_vect)
 {
-	TCNT0 = TCNT0_VALUE;
-	tsk_task_time_manager ();
+  TCNT0 = TCNT0_VALUE;
+  tsk_task_time_manager();
 }

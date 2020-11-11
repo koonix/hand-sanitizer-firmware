@@ -23,7 +23,7 @@ INCLUDE = /usr/avr/include src src/tasks
 REL = release
 
 # directories for clang-format (clangf target)
-CLANGF = src src/tasks
+CLANGF = src src/tasks src/config
 
 
 # ==================

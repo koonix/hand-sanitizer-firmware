@@ -1,0 +1,4 @@
+# Config file for astyle code formatter
+mode=c
+suffix=none
+style=linux
