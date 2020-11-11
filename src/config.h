@@ -73,18 +73,34 @@ static void io_init(void)
 
 static void timer0_init(void)
 {
-    TCCR0 = (1 << CS02) | (0 << CS01) | (0 << CS00);
+    TCCR0 =
+        (1 << CS02) |
+        (0 << CS01) |
+        (0 << CS00);
 
     TCNT0 = TCNT0_VALUE;
 }
 
 static void timer1_init(void)
 {
-    TCCR1A = (1 << COM1A1) | (1 << COM1A0) | (0 << COM1B1) | (0 << COM1B0) |
-             (0 << FOC1A) | (1 << FOC1B) | (0 << WGM11) | (0 << WGM10);
+    TCCR1A =
+        (1 << COM1A1) |
+        (1 << COM1A0) |
+        (0 << COM1B1) |
+        (0 << COM1B0) |
+        (0 << FOC1A)  |
+        (1 << FOC1B)  |
+        (0 << WGM11)  |
+        (0 << WGM10);
 
-    TCCR1B = (0 << ICNC1) | (0 << ICES1) | (1 << WGM13) | (0 << WGM12) | (0 << CS12) |
-             (0 << CS11) | (1 << CS10);
+    TCCR1B =
+        (0 << ICNC1) |
+        (0 << ICES1) |
+        (1 << WGM13) |
+        (0 << WGM12) |
+        (0 << CS12)  |
+        (0 << CS11)  |
+        (1 << CS10);
 
     TCNT1 = 0;
     ICR1  = 100; /* TOP = 100; */
@@ -94,8 +110,14 @@ static void timer1_init(void)
 
 static void timer_interrupts_init(void)
 {
-    TIMSK = (0 << OCIE2) | (0 << TOIE2) | (0 << TICIE1) | (0 << OCIE1A) |
-            (0 << OCIE1B) | (0 << TOIE1) | (1 << TOIE0);
+    TIMSK =
+        (0 << OCIE2)  |
+        (0 << TOIE2)  |
+        (0 << TICIE1) |
+        (0 << OCIE1A) |
+        (0 << OCIE1B) |
+        (0 << TOIE1)  |
+        (1 << TOIE0);
 }
 
 static void registers_init(void)
