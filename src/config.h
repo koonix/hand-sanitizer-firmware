@@ -1,9 +1,11 @@
 #include <avr/io.h>
+#include <stdint.h>
 #include "iomacros.h"
 #include "tasker.h"
 #include "blink.h"
 #include "button.h"
 #include "motor.h"
+#include "taskmacros.h"
 
 #define F_CPU 8000000
 
@@ -11,33 +13,32 @@
 // = Tasks
 // =====================
 
-#define CFG_TASKS
-#define CFG_IO
-#define CFG_REG
+/* #define CFG_TASKS */
+/* #define CFG_IO */
+/* #define CFG_REG */
 
-#ifdef CFG_TASKS
+/* #ifdef CFG_TASKS */
 
 /* Define tasks, their initial state and their run period */
-static Task task_array[] = {
-    {debounce, RUNNABLE, 1},
-    {button_event_handler, PAUSED, 13},
-    {motor_startup, PAUSED, 5},
-    {motor_shutdown, PAUSED, 9},
-    {motor_rampup, PAUSED, 9},
-    {motor_rampdown, PAUSED, 9},
-    {blink, PAUSED, 27},
-    {blink_upper, PAUSED, 85},
-    {blink_lower, PAUSED, 1},
-    {blink_upper_secondary, PAUSED, 14},
-    {blink_lower_secondary, PAUSED, 1},
-    {motor_toggle_speed_control, PAUSED, 69},
-    {motor_toggle_on_off, PAUSED, 69},
-    {blink_upper, PAUSED, 1},
-    {motor_rampdown, PAUSED, 1},
-    {motor_rampdown, PAUSED, 1},
-};
+void tasks_init(void)
+{
+    tsk_task_create(blink_upper,                PAUSED,     1     );
+    tsk_task_create(debounce,                 RUNNABLE,     1     );
+    tsk_task_create(motor_startup,              PAUSED,     5     );
+    tsk_task_create(motor_shutdown,             PAUSED,     9     );
+    tsk_task_create(motor_rampup,               PAUSED,     9     );
+    tsk_task_create(motor_rampdown,             PAUSED,     9     );
+    tsk_task_create(motor_toggle_speed_control, PAUSED,     69    );
+    tsk_task_create(motor_toggle_on_off,        PAUSED,     69    );
+    tsk_task_create(button_event_handler,       PAUSED,     13    );
+    tsk_task_create(blink,                      PAUSED,     27    );
+    tsk_task_create(blink_upper,                PAUSED,     85    );
+    tsk_task_create(blink_lower,                PAUSED,     1     );
+    tsk_task_create(blink_upper_secondary,      PAUSED,     14    );
+    tsk_task_create(blink_lower_secondary,      PAUSED,     1     );
+}
 
-#endif
+/* #endif */
 
 // =====================
 // = Input/Output
