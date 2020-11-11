@@ -7,24 +7,21 @@
 
 #include <avr/io.h>
 #include <avr/interrupt.h>
-
-#define CFG_TASKS
-#define CFG_IO
-#define CFG_REG
+#define MAIN_C
 #include "config.h"
 
-int main(void)
+int main (void)
 {
-  registers_init();
-  tasks_init();
-  sei();
+    registers_init();
+    tasks_init();
+    sei();
 
-  while (1)
-    tsk_task_runner();
+    while (1)
+        tsk_task_runner();
 }
 
 ISR(TIMER0_OVF_vect)
 {
-  TCNT0 = TCNT0_VALUE;
-  tsk_task_time_manager();
+    TCNT0 = TCNT0_VALUE;
+    tsk_task_time_manager();
 }

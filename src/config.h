@@ -1,49 +1,61 @@
+/*
+ * config.h
+ * most of the project's configuration is done here.
+ * you just have to write the tasks, and put
+ * interrupt service routines in main.c.
+ */
+
+#ifndef CONFIG_H
+#define CONFIG_H
+
 #include <avr/io.h>
 #include <stdint.h>
-
-#define F_CPU 8000000UL
-
 #include "iomacros.h"
-#include "tasker.h"
 #include "blink.h"
 #include "button.h"
 #include "motor.h"
-#include "taskmacros.h"
 
-
-// =====================
-// = Tasks
-// =====================
-
-
-/* Define tasks, their initial state and their run period */
-void tasks_init(void)
-{
-    tsk_task_create(blink_upper,                PAUSED,     1     );
-    tsk_task_create(debounce,                 RUNNABLE,     1     );
-    tsk_task_create(motor_startup,              PAUSED,     5     );
-    tsk_task_create(motor_shutdown,             PAUSED,     9     );
-    tsk_task_create(motor_rampup,               PAUSED,     9     );
-    tsk_task_create(motor_rampdown,             PAUSED,     9     );
-    tsk_task_create(motor_toggle_speed_control, PAUSED,     69    );
-    tsk_task_create(motor_toggle_on_off,        PAUSED,     69    );
-    tsk_task_create(button_event_handler,       PAUSED,     13    );
-    tsk_task_create(blink,                      PAUSED,     27    );
-    tsk_task_create(blink_upper,                PAUSED,     85    );
-    tsk_task_create(blink_lower,                PAUSED,     1     );
-    tsk_task_create(blink_upper_secondary,      PAUSED,     14    );
-    tsk_task_create(blink_lower_secondary,      PAUSED,     1     );
-}
-
+#define F_CPU 8000000UL
 
 // =====================
 // = Input/Output
 // =====================
 
 /* Put meaningful names on I/O pins */
-#define BUTTON   D, 3
-#define LED_DOWN D, 2
-#define LED_UP   D, 4
+#define BUTTON   D,3
+#define LED_DOWN D,2
+#define LED_UP   D,4
+
+// =====================
+// = Tasks
+// =====================
+
+/* how often the tsk_task_time_manager runs (in milliseconds) */
+#define TASK_TIME_INTERVAL_MSEC 4
+#define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1)
+
+#ifdef MAIN_C
+
+#include "tasker.h"
+
+/* Define tasks, their initial state and their run period */
+static void tasks_init(void)
+{
+    tsk_task_create ( blink_upper,                PAUSED,   MSEC(4)  );
+    tsk_task_create ( debounce,                 RUNNABLE,   MSEC(4)  );
+    tsk_task_create ( motor_startup,              PAUSED,   MSEC(20) );
+    tsk_task_create ( motor_shutdown,             PAUSED,   MSEC(36) );
+    tsk_task_create ( motor_rampup,               PAUSED,   MSEC(36) );
+    tsk_task_create ( motor_rampdown,             PAUSED,   MSEC(36) );
+    tsk_task_create ( motor_toggle_speed_control, PAUSED,   MSEC(24) );
+    tsk_task_create ( motor_toggle_on_off,        PAUSED,   MSEC(24) );
+    tsk_task_create ( button_event_handler,       PAUSED,   MSEC(4)  );
+    tsk_task_create ( blink,                      PAUSED,   MSEC(8)  );
+    tsk_task_create ( blink_upper,                PAUSED,   MSEC(32) );
+    tsk_task_create ( blink_lower,                PAUSED,   MSEC(4)  );
+    tsk_task_create ( blink_upper_secondary,      PAUSED,   MSEC(4)  );
+    tsk_task_create ( blink_lower_secondary,      PAUSED,   MSEC(4)  );
+}
 
 // =====================
 // = Registers
@@ -62,6 +74,9 @@ static void io_init(void)
     ON(LED_DOWN);
 }
 
+/* This is the timer-counter's initial value.
+   The timer-counter register shall be initialiez to this value
+   on startup (in this function) and in timer's ovf interrupt. */
 #define TCNT0_VALUE 0x83
 
 static void timer0_init(void)
@@ -120,3 +135,6 @@ static void registers_init(void)
     timer1_init();
     timer_interrupts_init();
 }
+
+#endif /* MAIN_C */
+#endif /* CONFIG_H */

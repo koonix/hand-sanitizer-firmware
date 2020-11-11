@@ -1,7 +1,7 @@
 #include "button.h"
-#include "iomacros.h"
+#include "config.h"
 #include "tasker.h"
-#include "taskmacros.h"
+#include "motor.h"
 #include <stdint.h>
 
 // Static function prototypes:
@@ -19,7 +19,7 @@ void
 debounce (void)
 {
 	static uint8_t consecutive_changed_state_cycles = 0;
-	_Bool raw = !READ_BUTTON; // raw = 1 means button is pressed
+	_Bool raw = !GET(BUTTON); // raw = 1 means button is pressed
 
 	if (raw != debounced)
 	{
@@ -76,12 +76,12 @@ button_event_handler (void)
 static void
 button_tap_event (void)
 {
-	tsk_set_task_state (TASK_MOTOR_TOGGLE_SPEED_CONTROL, RUNNABLE);
+	tsk_set_task_state (motor_toggle_speed_control, RUNNABLE);
 }
 
 
 static void
 button_hold_event (void)
 {
-	tsk_set_task_state (TASK_MOTOR_TOGGLE_ON_OFF, RUNNABLE);
+	tsk_set_task_state (motor_toggle_on_off, RUNNABLE);
 }
