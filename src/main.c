@@ -5,7 +5,9 @@
  * running all the tasks in one cycle.
  */
 
+#include <avr/io.h>
 #include <avr/interrupt.h>
+
 #define CFG_TASKS
 #define CFG_IO
 #define CFG_REG
@@ -14,10 +16,11 @@
 int main(void)
 {
   registers_init();
+  tasks_init();
   sei();
 
   while (1)
-	tsk_task_runner();
+    tsk_task_runner();
 }
 
 ISR(TIMER0_OVF_vect)
