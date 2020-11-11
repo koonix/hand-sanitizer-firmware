@@ -1,5 +1,8 @@
 #include <avr/io.h>
 #include <stdint.h>
+
+#define F_CPU 8000000UL
+
 #include "iomacros.h"
 #include "tasker.h"
 #include "blink.h"
@@ -7,17 +10,11 @@
 #include "motor.h"
 #include "taskmacros.h"
 
-#define F_CPU 8000000
 
 // =====================
 // = Tasks
 // =====================
 
-/* #define CFG_TASKS */
-/* #define CFG_IO */
-/* #define CFG_REG */
-
-/* #ifdef CFG_TASKS */
 
 /* Define tasks, their initial state and their run period */
 void tasks_init(void)
@@ -38,24 +35,19 @@ void tasks_init(void)
     tsk_task_create(blink_lower_secondary,      PAUSED,     1     );
 }
 
-/* #endif */
 
 // =====================
 // = Input/Output
 // =====================
-#ifdef CFG_IO
 
 /* Put meaningful names on I/O pins */
 #define BUTTON   D, 3
 #define LED_DOWN D, 2
 #define LED_UP   D, 4
 
-#endif
-
 // =====================
 // = Registers
 // =====================
-#ifdef CFG_REG
 
 /* Define I/O pins as inputs or outputs, and other I/O settings */
 static void io_init(void)
@@ -128,5 +120,3 @@ static void registers_init(void)
     timer1_init();
     timer_interrupts_init();
 }
-
-#endif
