@@ -17,13 +17,14 @@
  */
 
 #include <stddef.h>
+#include "config.h"
 #include "tasker.h"
 
 // Static function prototypes:
 static void check_task_counter_and_handle_state(uint8_t task_index);
 static uint8_t get_task_index(TaskFunctionPtr task);
 
-static Task task_array[]      = {NULL};
+static Task task_array[NUMBER_OF_TASKS] = {NULL};
 static uint8_t numberof_tasks = 0;
 
 void tsk_task_create(TaskFunctionPtr function, TaskState state, TaskTime period)

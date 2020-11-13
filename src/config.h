@@ -32,7 +32,11 @@
 
 /* how often the tsk_task_time_manager runs (in milliseconds) */
 #define TASK_TIME_INTERVAL_MSEC 4
+/* this macro allows you to enter task time in milliseconds, regardless of
+ * how often tsk_task_time_manager runs. */
 #define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1)
+/* number of tasks you've defined. */
+#define NUMBER_OF_TASKS 14
 
 #ifdef MAIN_C
 
