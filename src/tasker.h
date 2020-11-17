@@ -42,7 +42,6 @@ typedef struct {
                             then the timer puts it into READY state. */
 } Task;
 
-void tsk_task_create(TaskFunctionPtr function, TaskState state, TaskTime period);
 void tsk_task_time_manager(void);
 void tsk_task_runner(void);
 void tsk_set_task_state(TaskFunctionPtr task, TaskState new_state);
