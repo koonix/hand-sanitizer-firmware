@@ -8,63 +8,67 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
+/* this macro allows you to enter task time in milliseconds, regardless of
+ * how often tsk_task_time_manager runs. */
+#define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1)
+
 #include <avr/io.h>
+#include <avr/interrupt.h>
 #include <stdint.h>
 #include "iomacros.h"
+#include "tasker.h"
+
+// =======================
+// = Include task headers
+// =======================
 #include "blink.h"
 #include "button.h"
 #include "motor.h"
 
-#define F_CPU 8000000UL
-
 // =====================
 // = Input/Output
 // =====================
-
 /* Put meaningful names on I/O pins */
 #define BUTTON   D,3
 #define LED_DOWN D,2
 #define LED_UP   D,4
 
 // =====================
-// = Tasks
+// = Other Config
 // =====================
-
+/* avr clock speed (in HZ) */
+#define F_CPU 8000000UL
 /* how often the tsk_task_time_manager runs (in milliseconds) */
 #define TASK_TIME_INTERVAL_MSEC 4
-/* this macro allows you to enter task time in milliseconds, regardless of
- * how often tsk_task_time_manager runs. */
-#define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1)
-/* number of tasks you've defined. */
-#define NUMBER_OF_TASKS 14
 
-#ifdef MAIN_C
+#ifdef TASKER_C
 
-#include "tasker.h"
-
+// =====================
+// = Tasks
+// =====================
 /* Define tasks, their initial state and their run period */
-static void tasks_init(void)
-{
-    tsk_task_create ( blink_upper,                PAUSED,   MSEC(4)  );
-    tsk_task_create ( debounce,                 RUNNABLE,   MSEC(4)  );
-    tsk_task_create ( motor_startup,              PAUSED,   MSEC(20) );
-    tsk_task_create ( motor_shutdown,             PAUSED,   MSEC(36) );
-    tsk_task_create ( motor_rampup,               PAUSED,   MSEC(36) );
-    tsk_task_create ( motor_rampdown,             PAUSED,   MSEC(36) );
-    tsk_task_create ( motor_toggle_speed_control, PAUSED,   MSEC(24) );
-    tsk_task_create ( motor_toggle_on_off,        PAUSED,   MSEC(24) );
-    tsk_task_create ( button_event_handler,       PAUSED,   MSEC(4)  );
-    tsk_task_create ( blink,                      PAUSED,   MSEC(8)  );
-    tsk_task_create ( blink_upper,                PAUSED,   MSEC(32) );
-    tsk_task_create ( blink_lower,                PAUSED,   MSEC(4)  );
-    tsk_task_create ( blink_upper_secondary,      PAUSED,   MSEC(4)  );
-    tsk_task_create ( blink_lower_secondary,      PAUSED,   MSEC(4)  );
-}
+Task task_array[] = {
+    { blink_upper,                PAUSED,   MSEC(4),   1 },
+    { debounce,                 RUNNABLE,   MSEC(4),   1 },
+    { motor_startup,              PAUSED,   MSEC(20),  1 },
+    { motor_shutdown,             PAUSED,   MSEC(36),  1 },
+    { motor_rampup,               PAUSED,   MSEC(36),  1 },
+    { motor_rampdown,             PAUSED,   MSEC(36),  1 },
+    { motor_toggle_speed_control, PAUSED,   MSEC(24),  1 },
+    { button_event_handler,       PAUSED,   MSEC(4),   1 },
+    { blink,                      PAUSED,   MSEC(8),   1 },
+    { blink_upper,                PAUSED,   MSEC(32),  1 },
+    { blink_lower,                PAUSED,   MSEC(4),   1 },
+    { blink_upper_secondary,      PAUSED,   MSEC(4),   1 },
+    { blink_lower_secondary,      PAUSED,   MSEC(4),   1 },
+};
+
+#endif
+#ifdef MAIN_C
 
 // =====================
 // = Registers
 // =====================
-
 /* Define I/O pins as inputs or outputs, and other I/O settings */
 static void io_init(void)
 {
@@ -77,12 +81,10 @@ static void io_init(void)
     OUTPUT(LED_DOWN);
     ON(LED_DOWN);
 }
-
 /* This is the timer-counter's initial value.
-   The timer-counter register shall be initialiez to this value
-   on startup (in this function) and in timer's ovf interrupt. */
+   The timer-counter will be initialiez to this value
+   on startup (in here) and in timer's overflow interrupt routine. */
 #define TCNT0_VALUE 0x83
-
 static void timer0_init(void)
 {
     TCCR0 =
@@ -92,7 +94,6 @@ static void timer0_init(void)
 
     TCNT0 = TCNT0_VALUE;
 }
-
 static void timer1_init(void)
 {
     TCCR1A =
@@ -119,7 +120,6 @@ static void timer1_init(void)
     OCR1A = 0;
     OCR1B = 0;
 }
-
 static void timer_interrupts_init(void)
 {
     TIMSK =
@@ -131,13 +131,17 @@ static void timer_interrupts_init(void)
         (0 << TOIE1)  |
         (1 << TOIE0);
 }
-
 static void registers_init(void)
 {
     io_init();
     timer0_init();
     timer1_init();
     timer_interrupts_init();
+}
+ISR(TIMER0_OVF_vect)
+{
+    TCNT0 = TCNT0_VALUE;
+    tsk_task_time_manager();
 }
 
 #endif /* MAIN_C */

@@ -35,21 +35,21 @@ typedef uint16_t TaskTime;
 typedef enum { RUNNABLE = 0, READY, PAUSED } TaskState;
 
 typedef struct {
-    TaskFunctionPtr run; /* This is the task that gets called periodically. */
+    TaskFunctionPtr run; /* This is the function (task) that gets called periodically. */
     TaskState state;     /* The current state of the task. */
     TaskTime period;     /* The period we want to call it. */
-    TaskTime
-    counter; /* Counter, if it reaches the period, then the timer puts it into READY state. */
+    TaskTime counter;    /* Counter, if it reaches the period,
+                            then the timer puts it into READY state. */
 } Task;
 
-void tsk_task_create (TaskFunctionPtr function, TaskState state, TaskTime period);
-void tsk_task_time_manager (void);
-void tsk_task_runner (void);
-void tsk_set_task_state   (TaskFunctionPtr task, TaskState new_state);
-void tsk_set_task_period  (TaskFunctionPtr task, TaskTime new_period);
-void tsk_set_task_counter (TaskFunctionPtr task, TaskTime new_counter);
-TaskState tsk_get_task_state   (TaskFunctionPtr task);
-TaskTime  tsk_get_task_period  (TaskFunctionPtr task);
-TaskTime  tsk_get_task_counter (TaskFunctionPtr task);
+void tsk_task_create(TaskFunctionPtr function, TaskState state, TaskTime period);
+void tsk_task_time_manager(void);
+void tsk_task_runner(void);
+void tsk_set_task_state(TaskFunctionPtr task, TaskState new_state);
+void tsk_set_task_period(TaskFunctionPtr task, TaskTime new_period);
+void tsk_set_task_counter(TaskFunctionPtr task, TaskTime new_counter);
+TaskState tsk_get_task_state(TaskFunctionPtr task);
+TaskTime tsk_get_task_period(TaskFunctionPtr task);
+TaskTime tsk_get_task_counter(TaskFunctionPtr task);
 
 #endif /* TASKER_H */

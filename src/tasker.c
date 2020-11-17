@@ -17,24 +17,14 @@
  */
 
 #include <stddef.h>
-#include "config.h"
+#include <avr/interrupt.h>
 #include "tasker.h"
+#define TASKER_C
+#include "config.h"
 
 // Static function prototypes:
-static void check_task_counter_and_handle_state(uint8_t task_index);
 static uint8_t get_task_index(TaskFunctionPtr task);
-
-static Task task_array[NUMBER_OF_TASKS] = {NULL};
-static uint8_t numberof_tasks = 0;
-
-void tsk_task_create(TaskFunctionPtr function, TaskState state, TaskTime period)
-{
-    task_array[numberof_tasks].run     = function;
-    task_array[numberof_tasks].period  = period;
-    task_array[numberof_tasks].state   = state;
-    task_array[numberof_tasks].counter = 1;
-    numberof_tasks++;
-}
+static const uint8_t numberof_tasks=sizeof(task_array)/sizeof(task_array[1]);
 
 /*
  * Finds a task's function and find it's
@@ -53,22 +43,20 @@ static uint8_t get_task_index(TaskFunctionPtr task)
 READY state. This function shall be called in a timer interrupt. */
 void tsk_task_time_manager(void)
 {
-    for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++)
-        if (task_array[task_index].state != PAUSED)
-            check_task_counter_and_handle_state(task_index);
-}
-/* This is a backend method used in the function "tsk_task_time_manager". */
-static void check_task_counter_and_handle_state(uint8_t task_index)
-{
-    /* Put it into READY state. */
-    if (task_array[task_index].counter >= task_array[task_index].period) {
-        task_array[task_index].counter = 1;
-        task_array[task_index].state   = READY;
-    }
+    for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++) {
+        if (task_array[task_index].state == PAUSED)
+            continue;
 
-    /* Or increment task's counter. */
-    else {
-        task_array[task_index].counter++;
+        else if (task_array[task_index].counter == 0)
+            task_array[task_index].state = READY;
+
+        else if (task_array[task_index].counter >= task_array[task_index].period) {
+            task_array[task_index].counter = 1;
+            task_array[task_index].state   = READY;
+        }
+
+        else
+            task_array[task_index].counter++;
     }
 }
 
@@ -79,7 +67,15 @@ void tsk_task_runner(void)
     for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++) {
         /* If it is ready, call it.*/
         if (task_array[task_index].state == READY) {
-            task_array[task_index].state = RUNNABLE;
+            if (task_array[task_index].counter == 0) {
+                cli();
+                task_array[task_index].state = PAUSED;
+                sei();
+            } else {
+                cli();
+                task_array[task_index].state = RUNNABLE;
+                sei();
+            }
             task_array[task_index].run();
         }
     }
