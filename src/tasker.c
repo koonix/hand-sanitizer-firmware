@@ -47,7 +47,7 @@ void tsk_task_time_manager(void)
         if (task_array[task_index].state == PAUSED)
             continue;
 
-        else if (task_array[task_index].counter == 0)
+        else if (task_array[task_index].period == 0)
             task_array[task_index].state = READY;
 
         else if (task_array[task_index].counter >= task_array[task_index].period) {
@@ -67,7 +67,7 @@ void tsk_task_runner(void)
     for (uint8_t task_index = 0; task_index < numberof_tasks; task_index++) {
         /* If it is ready, call it.*/
         if (task_array[task_index].state == READY) {
-            if (task_array[task_index].counter == 0) {
+            if (task_array[task_index].period == 0) {
                 cli();
                 task_array[task_index].state = PAUSED;
                 sei();

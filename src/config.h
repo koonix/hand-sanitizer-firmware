@@ -8,22 +8,25 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-/* this macro allows you to enter task time in milliseconds, regardless of
+/* this macro allows you to enter task period in milliseconds, regardless of
  * how often tsk_task_time_manager runs. */
 #define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1)
 
+/* system headers */
 #include <avr/io.h>
 #include <avr/interrupt.h>
 #include <stdint.h>
 #include "iomacros.h"
 #include "tasker.h"
 
+
 // =======================
-// = Include task headers
+// = Task Headers
 // =======================
 #include "blink.h"
 #include "button.h"
 #include "motor.h"
+
 
 // =====================
 // = Input/Output
@@ -33,21 +36,42 @@
 #define LED_DOWN D,2
 #define LED_UP   D,4
 
+#ifdef MAIN_C
+static void io_init(void)
+{
+    INPUT  (BUTTON);
+    PULLUP (BUTTON);
+
+    OUTPUT (LED_UP);
+    OFF    (LED_UP);
+
+    OUTPUT (LED_DOWN);
+    ON     (LED_DOWN);
+}
+#endif
+
+
 // =====================
 // = Other Config
 // =====================
-/* avr clock speed (in HZ) */
-#define F_CPU 8000000UL
-/* how often the tsk_task_time_manager runs (in milliseconds) */
-#define TASK_TIME_INTERVAL_MSEC 4
+#define F_CPU 8000000UL /* avr clock speed (in HZ) */
+#define TASK_TIME_INTERVAL_MSEC 4 /* how often the tsk_task_time_manager runs (in milliseconds) */
+
 
 #ifdef TASKER_C
 
 // =====================
 // = Tasks
 // =====================
-/* Define tasks, their initial state and their run period */
 Task task_array[] = {
+
+/*
+ * Define tasks, their initial state and their run period.
+ * Period of one means task runs once (won't repeat).
+ * You should always set task's counter to 1.
+ */
+
+/*    task function               state     period     counter  */
     { blink_upper,                PAUSED,   MSEC(4),   1 },
     { debounce,                 RUNNABLE,   MSEC(4),   1 },
     { motor_startup,              PAUSED,   MSEC(20),  1 },
@@ -63,74 +87,69 @@ Task task_array[] = {
     { blink_lower_secondary,      PAUSED,   MSEC(4),   1 },
 };
 
+
 #endif
 #ifdef MAIN_C
 
 // =====================
 // = Registers
 // =====================
+
 /* Define I/O pins as inputs or outputs, and other I/O settings */
-static void io_init(void)
-{
-    INPUT(BUTTON);
-    PULLUP(BUTTON);
 
-    OUTPUT(LED_UP);
-    OFF(LED_UP);
+#define TCNT0_VALUE 0x83 /* This is the timer-counter's initial value.
+                            The timer-counter will be initialiez to this value
+                            on startup (in here) and in timer's overflow interrupt routine. */
 
-    OUTPUT(LED_DOWN);
-    ON(LED_DOWN);
-}
-/* This is the timer-counter's initial value.
-   The timer-counter will be initialiez to this value
-   on startup (in here) and in timer's overflow interrupt routine. */
-#define TCNT0_VALUE 0x83
 static void timer0_init(void)
 {
     TCCR0 =
-        (1 << CS02) |
-        (0 << CS01) |
-        (0 << CS00);
+    (1 << CS02) |
+    (0 << CS01) |
+    (0 << CS00);
 
     TCNT0 = TCNT0_VALUE;
 }
+
 static void timer1_init(void)
 {
     TCCR1A =
-        (1 << COM1A1) |
-        (1 << COM1A0) |
-        (0 << COM1B1) |
-        (0 << COM1B0) |
-        (0 << FOC1A)  |
-        (1 << FOC1B)  |
-        (0 << WGM11)  |
-        (0 << WGM10);
+    (1 << COM1A1) |
+    (1 << COM1A0) |
+    (0 << COM1B1) |
+    (0 << COM1B0) |
+    (0 << FOC1A)  |
+    (1 << FOC1B)  |
+    (0 << WGM11)  |
+    (0 << WGM10);
 
     TCCR1B =
-        (0 << ICNC1) |
-        (0 << ICES1) |
-        (1 << WGM13) |
-        (0 << WGM12) |
-        (0 << CS12)  |
-        (0 << CS11)  |
-        (1 << CS10);
+    (0 << ICNC1) |
+    (0 << ICES1) |
+    (1 << WGM13) |
+    (0 << WGM12) |
+    (0 << CS12)  |
+    (0 << CS11)  |
+    (1 << CS10);
 
     TCNT1 = 0;
     ICR1  = 100; /* TOP = 100; */
     OCR1A = 0;
     OCR1B = 0;
 }
+
 static void timer_interrupts_init(void)
 {
     TIMSK =
-        (0 << OCIE2)  |
-        (0 << TOIE2)  |
-        (0 << TICIE1) |
-        (0 << OCIE1A) |
-        (0 << OCIE1B) |
-        (0 << TOIE1)  |
-        (1 << TOIE0);
+    (0 << OCIE2)  |
+    (0 << TOIE2)  |
+    (0 << TICIE1) |
+    (0 << OCIE1A) |
+    (0 << OCIE1B) |
+    (0 << TOIE1)  |
+    (1 << TOIE0);
 }
+
 static void registers_init(void)
 {
     io_init();
@@ -138,6 +157,7 @@ static void registers_init(void)
     timer1_init();
     timer_interrupts_init();
 }
+
 ISR(TIMER0_OVF_vect)
 {
     TCNT0 = TCNT0_VALUE;
