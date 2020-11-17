@@ -9,7 +9,7 @@
 #define CONFIG_H
 
 /* this macro allows you to enter task period in milliseconds, regardless of
- * how often tsk_task_time_manager runs. */
+ * how often task_time_manager runs. */
 #define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1)
 
 /* system headers */
@@ -55,7 +55,7 @@ static void io_init(void)
 // = Other Config
 // =====================
 #define F_CPU 8000000UL /* avr clock speed (in HZ) */
-#define TASK_TIME_INTERVAL_MSEC 4 /* how often the tsk_task_time_manager runs (in milliseconds) */
+#define TASK_TIME_INTERVAL_MSEC 4 /* how often the task_time_manager runs (in milliseconds) */
 
 
 #ifdef TASKER_C
@@ -189,7 +189,7 @@ static void registers_init(void)
 ISR(TIMER0_OVF_vect)
 {
     TCNT0 = TCNT0_VALUE;
-    tsk_task_time_manager();
+    task_time_manager();
 }
 
 #endif /* MAIN_C */

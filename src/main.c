@@ -14,5 +14,5 @@ int main (void)
     registers_init();
     sei();
     while (1)
-        tsk_task_runner();
+        task_runner();
 }

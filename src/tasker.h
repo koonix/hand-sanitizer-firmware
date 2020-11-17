@@ -42,13 +42,13 @@ typedef struct {
                             then the timer puts it into READY state. */
 } Task;
 
-void tsk_task_time_manager(void);
-void tsk_task_runner(void);
-void tsk_set_task_state(TaskFunctionPtr task, TaskState new_state);
-void tsk_set_task_period(TaskFunctionPtr task, TaskTime new_period);
-void tsk_set_task_counter(TaskFunctionPtr task, TaskTime new_counter);
-TaskState tsk_get_task_state(TaskFunctionPtr task);
-TaskTime tsk_get_task_period(TaskFunctionPtr task);
-TaskTime tsk_get_task_counter(TaskFunctionPtr task);
+void task_time_manager(void);
+void task_runner(void);
+void task_set_state(TaskFunctionPtr task, TaskState new_state);
+void task_set_period(TaskFunctionPtr task, TaskTime new_period);
+void task_set_counter(TaskFunctionPtr task, TaskTime new_counter);
+TaskState task_get_state(TaskFunctionPtr task);
+TaskTime task_get_period(TaskFunctionPtr task);
+TaskTime task_get_counter(TaskFunctionPtr task);
 
 #endif /* TASKER_H */

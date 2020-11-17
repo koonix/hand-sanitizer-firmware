@@ -76,12 +76,12 @@ button_event_handler (void)
 static void
 button_tap_event (void)
 {
-	tsk_set_task_state (motor_toggle_speed_control, RUNNABLE);
+	task_set_state (motor_toggle_speed_control, RUNNABLE);
 }
 
 
 static void
 button_hold_event (void)
 {
-	tsk_set_task_state (motor_toggle_on_off, RUNNABLE);
+	task_set_state (motor_toggle_on_off, RUNNABLE);
 }
