@@ -150,11 +150,39 @@ static void timer_interrupts_init(void)
     (1 << TOIE0);
 }
 
+/* ADCLAR = adc left adjust; if 8-bit precision (0-256) is enough,
+ * set ADCLAR to 1 (to turn on left adjust) and read the ADCH register.
+ * otherwise (if you need full 0-1024 precision),
+ * set it to 0 and read the ADC register. */
+static void
+adc_init (void)
+{
+    ADMUX =
+        (0 << REFS1) |
+        (1 << REFS0) |
+        (0 << ADLAR) |
+        (0 << MUX3)  |
+        (0 << MUX2)  |
+        (1 << MUX1)  |
+        (1 << MUX0);
+
+    ADCSRA =
+        (1 << ADEN)  |
+        (0 << ADSC)  |
+        (0 << ADFR)  |
+        (0 << ADIF)  |
+        (0 << ADIE)  |
+        (1 << ADPS2) |
+        (1 << ADPS1) |
+        (0 << ADPS0);
+}
+
 static void registers_init(void)
 {
     io_init();
     timer0_init();
     timer1_init();
+    adc_init();
     timer_interrupts_init();
 }
 
