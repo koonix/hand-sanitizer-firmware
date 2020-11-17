@@ -23,9 +23,8 @@
 // =======================
 // = Task Headers
 // =======================
+#include "chkadc.h"
 #include "blink.h"
-#include "button.h"
-#include "motor.h"
 
 
 // =====================
@@ -148,6 +147,10 @@ ISR(TIMER0_OVF_vect)
 {
     TCNT0 = TCNT0_VALUE;
     task_time_manager();
+}
+
+ISR(SPI_STC_vect)
+{
 }
 
 #endif /* MAIN_C */

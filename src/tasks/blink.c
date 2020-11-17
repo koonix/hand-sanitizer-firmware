@@ -1,64 +1,52 @@
-#include "tasker.h"
-#include "motor.h"
+#include <stdint.h>
 #include "blink.h"
+#include "tasker.h"
+#include "iomacros.h"
 #include "config.h"
 
-// Prototypes:
-static void blink_handler(void);
+#define RELAY_IS_OFF 0
 
-static uint16_t speed2period(uint16_t speed);
+static uint8_t cycles_remaining = 0;
+static uint8_t blink_cycle        = RELAY_IS_OFF;
+uint8_t blink_count             = 1;
+
+/* turns a 0 into a 1 and vice-versa. */
+static inline void flip(uint8_t* bool);
+
+/* this task runs once at startup. */
+void blink_start(void)
+{
+    static uint8_t count=0;
+    FLIP(RELAY);
+    count++;
+
+    if (count >= 6)
+    {
+        task_set_state(blink_start, PAUSED);
+        task_set_state(chkadc, RUNNABLE);
+    }
+}
 
 void blink(void)
 {
-    if (motor_is_on)
-        blink_handler();
-    else {
-        task_set_state(blink_upper, PAUSED);
-        task_set_state(blink_lower, PAUSED);
+    if (cycles_remaining == 0)
+        cycles_remaining = blink_count * 2;
+
+    FLIP(RELAY);
+    flip(&blink_cycle);
+    cycles_remaining--;
+
+    if (blink_cycle == RELAY_IS_OFF) {
+        task_set_period(blink, MSEC(350));
+    } else {
+        task_set_period(blink, MSEC(50));
+    }
+
+    if (cycles_remaining == 0) {
+        task_set_state(blink, PAUSED);
     }
 }
 
-static void blink_handler(void)
-{
-    task_set_period(blink_upper, speed2period(OCR1A));
-    task_set_period(blink_lower, speed2period(OCR1A));
-
-    switch (motor_state) {
-    case MOTOR_RAMPUP_STATE:
-    case MOTOR_HOLD_BEFORE_RAMPUP_STATE:
-        task_set_state(blink_upper, RUNNABLE);
-        task_set_state(blink_lower, PAUSED);
-        break;
-    default:
-        task_set_state(blink_lower, RUNNABLE);
-        task_set_state(blink_upper, PAUSED);
-        break;
-    }
-}
-
-void blink_upper(void) {
-    task_set_state(blink_upper_secondary, RUNNABLE);
-}
-
-void blink_lower(void)
-{
-    ON(LED_UP);
-    task_set_state(blink_lower_secondary, RUNNABLE);
-}
-
-void blink_upper_secondary(void)
-{
-    OFF(LED_UP);
-    task_set_state(blink_upper_secondary, PAUSED);
-}
-
-void blink_lower_secondary(void)
-{
-    OFF(LED_DOWN);
-    task_set_state(blink_lower_secondary, PAUSED);
-}
-
-static uint16_t speed2period(uint16_t speed)
-{
-    return (((MOTOR_MAX_SPEED - speed) * 3) + 55) / 4;
+static inline void flip(uint8_t* bool) {
+    *bool = 1 - *bool;
 }

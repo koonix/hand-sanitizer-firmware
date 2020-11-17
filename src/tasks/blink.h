@@ -1,19 +1,11 @@
-#ifndef BLINKER_H
-#define BLINKER_H
+#ifndef BLINK_H
+#define BLINK_H
 
-void
-blink (void);
+#include <stdint.h>
 
-void
-blink_upper (void);
+void blink(void);
+void blink_start(void);
 
-void
-blink_lower (void);
+extern uint8_t blink_count;
 
-void
-blink_upper_secondary (void);
-
-void
-blink_lower_secondary (void);
-
-#endif /* BLINKER_H */
+#endif /* BLINK_H */
