@@ -6,12 +6,17 @@
  */
 
 #include <avr/io.h>
+/* #include <util/delay.h> */
 #define MAIN_C
 #include "config.h"
 
 int main (void)
 {
     registers_init();
+/*    FLIP(RELAY);
+    _delay_ms(100);
+    FLIP(RELAY);
+    _delay_ms(100); */
     sei();
     while (1)
         task_runner();
