@@ -7,7 +7,7 @@
 #define RELAY_IS_OFF 0
 
 static uint8_t cycles_remaining = 0;
-static uint8_t blink_cycle        = RELAY_IS_OFF;
+static uint8_t blink_cycle      = RELAY_IS_OFF;
 uint8_t blink_count             = 1;
 
 /* turns a 0 into a 1 and vice-versa. */
