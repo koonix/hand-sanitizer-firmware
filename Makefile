@@ -34,7 +34,7 @@ CLANGF = src src/tasks src/config
 # it's defined in config-registers.h now,
 # so it's commented-out here.
 #
-# CLK = 8000000UL
+CLK = 8000000UL
 
 
 # mcu model
@@ -113,7 +113,8 @@ EXTRAFLAGS = -funsigned-char -funsigned-bitfields -fshort-enums \
 # ==================
 
 # executables
-AVRDUDE = sudo avrdude -c $(PRG) -p $(DUDEMCU)
+# AVRDUDE = sudo avrdude -c $(PRG) -p $(DUDEMCU)
+AVRDUDE = avrdude -c $(PRG) -p $(DUDEMCU)
 OBJCOPY = avr-objcopy
 OBJDUMP = avr-objdump
 SIZE    = avr-size --format=avr --target=elf32-avr --mcu=$(SIZEMCU)
@@ -129,7 +130,7 @@ ELF = $(REL)/$(PRJ).elf
 # c flags
 #CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) -Werror -Os $(DEBUG) -DF_CPU=$(CLK)
 CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) -Werror -Os $(DEBUG) \
-		 -mmcu=$(MCU) $(INCX) -D$(MCU_DEF)
+		 -mmcu=$(MCU) $(INCX) -D$(MCU_DEF) -DF_CPU=$(CLK)
 
 
 
