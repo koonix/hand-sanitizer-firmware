@@ -9,3 +9,4 @@ avr-gcc
 -D__AVR_ATmega8A__
 -DTASKER_C
 -DMAIN_C
+-Wno-attributes
