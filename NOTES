@@ -1,0 +1,2 @@
+Formula for calculating timer overflow period:
+(("TOP"−"Initial")/("CLKIO"/"Prescaler"))×1000
