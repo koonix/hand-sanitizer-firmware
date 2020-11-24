@@ -10,7 +10,8 @@
 
 /* this macro allows you to enter task period in milliseconds, regardless of
  * how often task_time_manager runs. */
-#define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1)
+/* #define MSEC(t) (((TaskTime)t/TASK_TIME_INTERVAL_MSEC)+1) */
+#define MSEC(t) ((TaskTime)t * 4)
 
 /* system headers */
 #include <avr/io.h>
@@ -49,8 +50,7 @@ static void io_init(void)
 // =====================
 // = Other Config
 // =====================
-#define F_CPU 8000000UL /* avr clock speed (in HZ) */
-#define TASK_TIME_INTERVAL_MSEC 1 /* how often the tsk_task_time_manager runs (in milliseconds) */
+#define TASK_TIME_INTERVAL_MSEC 4 /* how often the tsk_task_time_manager runs (in milliseconds) */
 
 
 #ifdef TASKER_C
@@ -82,16 +82,16 @@ Task task_array[] = {
 
 /* Define I/O pins as inputs or outputs, and other I/O settings */
 
-#define TCNT0_VALUE 0x83 /* This is the timer-counter's initial value.
-                            The timer-counter will be initialiez to this value
-                            on startup (in here) and in timer's overflow interrupt routine. */
+#define TCNT0_VALUE 6 /* This is the timer-counter's initial value.
+                         The timer-counter will be initialiez to this value
+                         on startup (in here) and in timer's overflow interrupt routine. */
 
 static void timer0_init(void)
 {
     TCCR0 =
     (0 << CS02) |
     (1 << CS01) |
-    (1 << CS00);
+    (0 << CS00);
 
     TCNT0 = TCNT0_VALUE;
 }
