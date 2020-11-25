@@ -16,6 +16,7 @@ uint8_t spi_send(const char* string)
     if (is_spi_busy() == SPI_IS_BUSY)
         return SPI_IS_BUSY;
     strcpy(spi_send_buffer, string);
+    task_set_state(spi_send_task, RUNNABLE);
     return SPI_IS_FREE;
 }
 
@@ -25,9 +26,9 @@ void spi_send_task(void)
     static uint8_t cycle = 0;
 
     SPI_START;
-    SPDR = spi_send_buffer[cycle++];
+    SPDR = spi_send_buffer[cycle];
 
-    if (cycle >= SPI_BUFFSIZE) {
+    if (spi_send_buffer[cycle] == '\0' || ++cycle >= SPI_BUFFSIZE) {
         cycle = 0;
         task_set_state(spi_send_task, PAUSED);
         task_set_state(spi_finish_transmission, RUNNABLE);
@@ -52,4 +53,11 @@ static uint8_t is_spi_busy(void)
     if (send == RUNNABLE || send == READY || fnsh == RUNNABLE || fnsh == READY)
         return SPI_IS_BUSY;
     return SPI_IS_FREE;
+}
+
+char* mstpcpy(char* dest, const char* src)
+{
+    while ((*dest = *src++))
+        ++dest;
+    return dest;
 }
