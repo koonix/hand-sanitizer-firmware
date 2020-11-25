@@ -91,8 +91,9 @@ Task task_array[] = {
     { chkadc,                   PAUSED,   MSEC(400),    1 },
     { blink,                    PAUSED,   MSEC(400),    1 },
     { blink_start,              PAUSED,   MSEC(200),    1 },
-    { adc_sample_test,        RUNNABLE,   MSEC(1000),   1 },
+    { adc_sample_runner,        RUNNABLE, MSEC(100),    1 },
     { adc_sample,               PAUSED,   MSEC(1),      1 },
+    { sanitize,                 PAUSED,   MSEC(200),    1 },
 };
 
 
@@ -144,7 +145,7 @@ static void adc_init (void)
     (0 << MUX3)  |
     (0 << MUX2)  |
     (1 << MUX1)  |
-    (1 << MUX0);
+    (0 << MUX0);
 
     ADCSRA =
     (1 << ADEN)  |
