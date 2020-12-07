@@ -10,11 +10,11 @@
 #define AVERAGING_SAMPLE_PERIOD_100MSEC        (uint8_t )30
 #define AVG_ROLLING_SIZE                       (uint8_t )36
 #define FIRSTTIME_QUICKSAMPLE_DURATION_100MSEC (uint8_t )3
-#define MINIMUM_RELIABLE_SENSOR_VALUE          (uint16_t)650
+#define MINIMUM_RELIABLE_SENSOR_VALUE          (uint16_t)100
 #define AVG_DISCARD_DIFF_THRESHOLD             (uint16_t)150
 
 static void check_sanitize(uint16_t adc);
-static uint16_t mvavg(uint16_t new_data);
+static uint16_t moving_average(uint16_t new_data);
 /* static void adc_select(uint8_t channel); */
 
 static uint16_t average = 0;
@@ -42,17 +42,18 @@ void adc_sample(void)
 
     else {
         cycle = 0;
+        task_set_state(adc_sample, PAUSED);
 
         avg_cycle_msec++;
 
         if (first_time) {
-            average = mvavg(ADC);
+            average = moving_average(ADC);
             if (avg_cycle_msec >= FIRSTTIME_QUICKSAMPLE_DURATION_100MSEC)
                 first_time = 0;
         }
         else if (avg_cycle_msec >= AVERAGING_SAMPLE_PERIOD_100MSEC) {
             avg_cycle_msec = 0;
-            average = mvavg(ADC);
+            average = moving_average(ADC);
         }
 
         mstpcpy(mstpcpy(mstpcpy(mstpcpy(mstpcpy(string,
@@ -62,8 +63,6 @@ void adc_sample(void)
 
         if (!first_time)
             check_sanitize(ADC);
-
-        task_set_state(adc_sample, PAUSED);
     }
 }
 
@@ -94,14 +93,14 @@ static void check_sanitize(uint16_t adc)
 static uint16_t diff(uint16_t v1, uint16_t v2) {
     return v1>v2 ? v1-v2 : v2-v1;
 }
-static uint16_t mvavg(uint16_t new_data)
+static uint16_t moving_average(uint16_t new_data)
 {
     static uint16_t data[AVG_ROLLING_SIZE] = {0};
+    static uint8_t data_count = 0;
     static uint16_t sum = 0;
-    static uint8_t total = 0;
     static uint8_t cycle = 0;
 
-    if(total >= AVG_ROLLING_SIZE && diff(average, new_data) >= AVG_DISCARD_DIFF_THRESHOLD)
+    if(data_count >= AVG_ROLLING_SIZE && diff(average, new_data) >= AVG_DISCARD_DIFF_THRESHOLD)
         return average;
 
     data[cycle] = new_data;
@@ -115,14 +114,14 @@ static uint16_t mvavg(uint16_t new_data)
     if (cycle >= AVG_ROLLING_SIZE)
         cycle = 0;
 
-    if(total < AVG_ROLLING_SIZE)
+    if(data_count < AVG_ROLLING_SIZE)
     {
-        total++;
+        data_count++;
         old_data = 0;
     }
 
     sum = sum - old_data + new_data;
-    uint16_t avg = sum / total;
+    uint16_t avg = sum / data_count;
     return avg;
 }
 
