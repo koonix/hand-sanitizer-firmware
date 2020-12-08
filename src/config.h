@@ -69,8 +69,14 @@ static void io_init(void)
 // =====================
 // = Other Config
 // =====================
-#define TASK_TIME_INTERVAL_MSEC 4 /* how often the tsk_task_time_manager runs (in milliseconds) */
 
+/* how often the tsk_task_time_manager runs (in milliseconds) */
+#define TASK_TIME_INTERVAL_MSEC 4
+
+/* mvavg settings */
+#define MVAVG_BUFF_SIZE 30
+#define MVAVG_DATA_TYPE uint16_t
+#define MVAVG_SUM_TYPE uint16_t
 
 #ifdef TASKER_C
 
