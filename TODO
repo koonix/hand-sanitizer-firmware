@@ -1,0 +1,2 @@
+must be able to specify a custom data_count ( < MVAVG_BUFF_SIZE )
+MVAVG_BUFF_SIZE becomes MVAVG_BUFF_MAX_SIZE
