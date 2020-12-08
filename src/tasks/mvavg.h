@@ -4,19 +4,20 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include <limits.h>
+#include "config.h"
 
 #ifndef MVAVG_BUFF_SIZE
-  #warning "MVAVG_BUFF_SIZE not defined for <mvavg.h>; defaults to 10."
+  # warning "MVAVG_BUFF_SIZE not defined for <mvavg.h>; defaults to 10."
   #define MVAVG_BUFF_SIZE 10
 #endif
 
 #ifndef MVAVG_DATA_TYPE
-  #warning "MVAVG_DATA_TYPE not defined for <mvavg.h>; defaults to uint16_t."
+  # warning "MVAVG_DATA_TYPE not defined for <mvavg.h>; defaults to uint16_t."
   #define MVAVG_DATA_TYPE uint16_t
 #endif
 
 #ifndef MVAVG_SUM_TYPE
-  #warning "MVAVG_SUM_TYPE not defined for <mvavg.h>; defaults to uint32_t."
+  # warning "MVAVG_SUM_TYPE not defined for <mvavg.h>; defaults to uint32_t."
   #define MVAVG_SUM_TYPE uint32_t
 #endif
 
@@ -26,13 +27,8 @@
   #elif MVAVG_BUFF_SIZE <= UINT_MAX
     #define MVAVG_CYCLE_TYPE uint16_t
   #else
-    #warning MVAVG_BUFF_SIZE has unknown range; MVAVG_CYCLE_TYPE set to uint32_t."
+    # warning "MVAVG_BUFF_SIZE has unknown range; MVAVG_CYCLE_TYPE set to uint32_t."
   #endif
-#endif
-
-#ifndef MVAVG_SUM_TYPE
-# warning "MVAVG_SUM_TYPE not defined for <mvavg.h>; defaults to uint32_t"
-#define MVAVG_SUM_TYPE uint32_t
 #endif
 
 typedef MVAVG_DATA_TYPE  MvAvgData;
