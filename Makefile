@@ -31,9 +31,6 @@ CLANGF = src src/tasks src/config
 # ==================
 
 # mcu clock	frequency
-# it's defined in config-registers.h now,
-# so it's commented-out here.
-#
 CLK = 8000000UL
 
 
@@ -100,9 +97,9 @@ WFLAGS = -std=c99 -pedantic -Wall \
 # other compile options
 #
 EXTRAFLAGS = -funsigned-char -funsigned-bitfields -fshort-enums \
-	-fpack-struct -fno-jump-tables
+	-fpack-struct -fno-jump-tables -ftrapv
 
-
+PREPROCFLAG = -save-temps=cwd
 
 # ==============================================================================
 # = Background Detail
@@ -128,9 +125,8 @@ HEX = $(REL)/$(PRJ).hex
 ELF = $(REL)/$(PRJ).elf
 
 # c flags
-#CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) -Werror -Os $(DEBUG) -DF_CPU=$(CLK)
-CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) -Werror -Os $(DEBUG) \
-		 -mmcu=$(MCU) $(INCX) -D$(MCU_DEF) -DF_CPU=$(CLK)
+CFLAGS = -std=c99 $(WFLAGS) $(EXTRAFLAGS) $(PREPROCFLAG) -Werror -Os -flto $(DEBUG) \
+		 -mmcu=$(MCU) $(INCX) -D$(MCU_DEF)
 
 
 
@@ -214,11 +210,13 @@ binsize:
 clean:
 	@rm -f $(HEX) $(ELF) *.o
 	@$(foreach dir, $(SRCS), rm -f $(dir)/*.o;)
+	@mkdir -p preproc
 
 # remove after-build unnecessary files
 clear:
 	@rm -f *.o
 	@$(foreach dir, $(SRCS), rm -f $(dir)/*.o;)
+	@mv *.s *.i *.res preproc/
 
 init:
 	@git config core.hooksPath .githooks
