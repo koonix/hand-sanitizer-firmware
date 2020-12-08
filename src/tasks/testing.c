@@ -3,35 +3,40 @@
 #include "testing.h"
 #include "config.h"
 #include "spi.h"
+#include "mvavg.h"
 
 /* Config */
 #define PROXIMITY_SENSORVALUE_DIFF_THRESHOLD   (uint16_t)35
 #define HAND_HOLD_ACTIVATION_TIME_100MSEC      (uint8_t )4
 #define AVERAGING_SAMPLE_PERIOD_100MSEC        (uint8_t )30
 #define AVG_ROLLING_SIZE                       (uint8_t )36
-#define FIRSTTIME_QUICKSAMPLE_DURATION_100MSEC (uint8_t )3
+#define FIRSTTIME_QUICKSAMPLE_DURATION_100MSEC (uint8_t )4
 #define MINIMUM_RELIABLE_SENSOR_VALUE          (uint16_t)100
 #define AVG_DISCARD_DIFF_THRESHOLD             (uint16_t)150
 
 static void check_sanitize(uint16_t adc);
-static uint16_t moving_average(uint16_t new_data);
 /* static void adc_select(uint8_t channel); */
 
 static uint16_t average = 0;
 /* static uint8_t admux_nomux = 0 | (0 << REFS1) | (1 << REFS0) | (0 << ADLAR); */
 
+MvAvg prox_avg;
 
 void adc_sample_runner(void) {
     task_set_state(adc_sample, RUNNABLE);
 }
 void adc_sample(void)
 {
-    static uint8_t cycle                = 0;
-    static uint8_t avg_cycle_msec       = 0;
-    static uint8_t first_time           = 1;
-    static char string[SPI_BUFFSIZE]    = {0};
-    char str_utoa[6]                    = {0};
-    char str_utoa2[6]                   = {0};
+    static uint8_t cycle                 = 0;
+    static uint8_t avg_cycle_msec        = 0;
+    static uint8_t first_time_avg        = 1;
+    static uint8_t first_time_init_mvavg = 1;
+    static char string[SPI_BUFFSIZE];
+
+    if (first_time_init_mvavg) {
+        first_time_init_mvavg = 0;
+        moving_average_init(&prox_avg);
+    }
 
     if (ADC_CONVERSION_IN_PROGRESS)
         return;
@@ -43,25 +48,26 @@ void adc_sample(void)
     else {
         cycle = 0;
         task_set_state(adc_sample, PAUSED);
-
         avg_cycle_msec++;
 
-        if (first_time) {
-            average = moving_average(ADC);
+        if (first_time_avg) {
             if (avg_cycle_msec >= FIRSTTIME_QUICKSAMPLE_DURATION_100MSEC)
-                first_time = 0;
+                first_time_avg = 0;
+            average = moving_average(&prox_avg, ADC);
         }
         else if (avg_cycle_msec >= AVERAGING_SAMPLE_PERIOD_100MSEC) {
             avg_cycle_msec = 0;
-            average = moving_average(ADC);
+            average = moving_average(&prox_avg, ADC);
         }
 
+        char str_utoa[6],str_utoa2[6];
+        /* formatting the spi string: */
         mstpcpy(mstpcpy(mstpcpy(mstpcpy(mstpcpy(string,
             "Pxm: "  ), utoa(ADC, str_utoa, 10)),
             ", Avg: "), utoa(average, str_utoa2, 10)), "\n\r");
         spi_send(string);
 
-        if (!first_time)
+        if (!first_time_avg)
             check_sanitize(ADC);
     }
 }
@@ -87,42 +93,6 @@ static void check_sanitize(uint16_t adc)
         return;
 
     hand_detected_cycles++;
-}
-
-
-static uint16_t diff(uint16_t v1, uint16_t v2) {
-    return v1>v2 ? v1-v2 : v2-v1;
-}
-static uint16_t moving_average(uint16_t new_data)
-{
-    static uint16_t data[AVG_ROLLING_SIZE] = {0};
-    static uint8_t data_count = 0;
-    static uint16_t sum = 0;
-    static uint8_t cycle = 0;
-
-    if(data_count >= AVG_ROLLING_SIZE && diff(average, new_data) >= AVG_DISCARD_DIFF_THRESHOLD)
-        return average;
-
-    data[cycle] = new_data;
-
-    uint8_t old_cycle = cycle + 1;
-    if (old_cycle >= AVG_ROLLING_SIZE)
-        old_cycle = 0;
-    uint16_t old_data = data[old_cycle];
-
-    cycle++;
-    if (cycle >= AVG_ROLLING_SIZE)
-        cycle = 0;
-
-    if(data_count < AVG_ROLLING_SIZE)
-    {
-        data_count++;
-        old_data = 0;
-    }
-
-    sum = sum - old_data + new_data;
-    uint16_t avg = sum / data_count;
-    return avg;
 }
 
 
@@ -153,4 +123,8 @@ void sanitize(void)
 /* { */
 /*     ADMUX = channel; */
 /*     ADMUX |= admux_nomux; */
+/* } */
+
+/* static uint16_t diff(uint16_t v1, uint16_t v2) { */
+/*     return v1>v2 ? v1-v2 : v2-v1; */
 /* } */
